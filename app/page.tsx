@@ -17,12 +17,12 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-indigo-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-40 right-10 w-96 h-96 bg-secondary-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl"></div>
       </div>
 
       {/* Hero Section */}
@@ -30,7 +30,7 @@ export default function Home() {
         <div className="container-custom">
           <div className="fade-in">
             <div className="inline-flex items-center bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-medium text-gray-700 mb-8 border border-gray-200/50 shadow-lg">
-              <Sparkles className="w-4 h-4 mr-2 text-blue-600" />
+              <Sparkles className="w-4 h-4 mr-2 text-primary-600" />
               L'événement IA le plus attendu de 2025
             </div>
 
@@ -99,7 +99,7 @@ export default function Home() {
               const Icon = stat.icon;
               return (
                 <div key={index} className="text-center slide-up">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   <div className="text-4xl font-bold gradient-text mb-2">{stat.number}</div>
@@ -129,25 +129,25 @@ export default function Home() {
                 icon: Zap,
                 title: 'CEO ArtBeau-Rescence',
                 description: 'Découvrez les dernières percées en IA générative, machine learning et deep learning avec des démonstrations exclusives.',
-                gradient: 'from-blue-500 to-cyan-500'
+                color: 'bg-primary-500'
               },
               {
                 icon: Users,
                 title: 'Networking Premium',
                 description: 'Rencontrez des leaders technologiques, entrepreneurs et chercheurs de renommée mondiale dans un cadre exceptionnel.',
-                gradient: 'from-purple-500 to-pink-500'
+                color: 'bg-secondary-800'
               },
               {
                 icon: BookOpen,
                 title: 'Formation Experte',
                 description: 'Participez à des ateliers hands-on et masterclass animés par les meilleurs spécialistes du domaine.',
-                gradient: 'from-green-500 to-teal-500'
+                color: 'bg-primary-600'
               }
             ].map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div key={index} className="card-hover group">
-                  <div className={`w-20 h-20 bg-gradient-to-r ${feature.gradient} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-20 h-20 ${feature.color} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-center">{feature.title}</h3>
@@ -194,7 +194,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden">
+      <section className="section-padding bg-secondary-800 text-white relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
           <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
