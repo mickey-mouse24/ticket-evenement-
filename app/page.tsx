@@ -67,7 +67,7 @@ export default function Home() {
             <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-sm text-gray-600">
               <div className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4" />
-                <span>Dakar, Sénégal</span>
+                <span>Rufisque, Sénégal</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
@@ -127,20 +127,27 @@ export default function Home() {
             {[
               {
                 icon: Zap,
-                title: 'CEO ArtBeau-Rescence',
-                description: 'Découvrez les dernières percées en IA générative, machine learning et deep learning avec des démonstrations exclusives.',
+                title: 'Karangué221',
+                description: (
+                  <div>
+                    <div>Une solution ultime pour la numérisation des flottes.</div>
+                    <div>Software : Plateforme de gestion de flotte, AI, SaaS</div>
+                    <div>Hardware : Devices AIoT</div>
+                  </div>
+                ),
                 color: 'bg-primary-500'
               },
               {
                 icon: Users,
-                title: 'Networking Premium',
-                description: 'Rencontrez des leaders technologiques, entrepreneurs et chercheurs de renommée mondiale dans un cadre exceptionnel.',
+                title: 'Sama Karangue',
+                
+                description: 'une solution ultime pour les chauffeurs.',
                 color: 'bg-secondary-800'
-              },
+              },  
               {
                 icon: BookOpen,
-                title: 'Formation Experte',
-                description: 'Participez à des ateliers hands-on et masterclass animés par les meilleurs spécialistes du domaine.',
+                title: 'Karangue Bag',
+                description: 'Une solution ultime pour augmenter les chances de survie .',
                 color: 'bg-primary-600'
               }
             ].map((feature, index) => {
@@ -151,7 +158,7 @@ export default function Home() {
                     <Icon className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-center">{feature.title}</h3>
-                  <p className="text-gray-600 text-center leading-relaxed">{feature.description}</p>
+                  <div className="text-gray-600 text-center leading-relaxed">{feature.description}</div>
                 </div>
               );
             })}
@@ -164,23 +171,28 @@ export default function Home() {
         <div className="container-custom">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Intervenants <span className="gradient-text">d'Exception</span>
+              Nos <span className="gradient-text">Partenaires</span>
             </h2>
             <p className="text-xl text-gray-600">
-              Les plus grands noms de l'IA mondiale et du transport routier seront présents du minitere du senegal
+                Les plus grands noms de l'IA mondiale et du transport routier seront présents du ministere du senegal
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {[
-              { name: 'Dr. Marie Dubois', role: 'Directrice IA - Tech Paris', avatar: '👩‍💼' },
-              { name: 'Prof. Jean Martin', role: 'Chercheur - MIT Labs', avatar: '👨‍🔬' },
-              { name: 'Sarah Chen', role: 'CEO - AI Innovations', avatar: '👩‍💻' }
+              { name: 'Dem Dikk', avatar: '' },
+              { name: 'MITTA', avatar: '' },  
+              { name: 'MFPRSP', avatar: '' },
+              { name: 'UNCHK', avatar: '' },
+              { name: 'TELTONIKA ', avatar: '' },
+              { name: 'GOVATHON', avatar: '' },
+              { name: 'BOLD GAINDE GROUP', avatar: '' },  
+              { name: 'BP', avatar: '' }
             ].map((speaker, index) => (
               <div key={index} className="card-hover text-center">
-                <div className="text-6xl mb-4">{speaker.avatar}</div>
+                <div className="text-6xl mb-4">{speaker.avatar || '🏢'}</div>
                 <h3 className="text-xl font-bold mb-2">{speaker.name}</h3>
-                <p className="text-gray-600">{speaker.role}</p>
+                <p className="text-gray-600">Partenaire officiel</p>
               </div>
             ))}
           </div>
@@ -212,7 +224,7 @@ export default function Home() {
               Prêt à Façonner l'Avenir ?
             </h2>
             <p className="text-xl mb-12 opacity-90 leading-relaxed">
-              Rejoignez-nous pour l'événement IA le plus important de l'année. 
+            Nous avons choisi de faire notre part pour répondre à ce problème en développant plusieurs solutions technologiques qui rendent le transport plus sûr et plus fiable.
               Une opportunité unique de découvrir les technologies qui transformeront notre monde et le transport routier.
             </p>
             

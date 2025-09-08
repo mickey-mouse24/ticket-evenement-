@@ -52,45 +52,6 @@ export const userQueries = {
     
     if (error && error.code !== 'PGRST116') throw error;
     return data;
-  },
-
-  // Trouver un utilisateur par ID
-  async findById(id: string) {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
-
-  // Mettre à jour un utilisateur
-  async update(id: string, updates: Partial<User>) {
-    const { data, error } = await supabase
-      .from('users')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
-
-  // Lister tous les utilisateurs (admin)
-  async findAll() {
-    const { data, error } = await supabase
-      .from('users')
-      .select(`
-        *,
-        reservations:reservations(*)
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data;
   }
 };
 
@@ -117,75 +78,5 @@ export const reservationQueries = {
     
     if (error) throw error;
     return data;
-  },
-
-  // Trouver une réservation par QR code
-  async findByQRCode(qrcode: string) {
-    const { data, error } = await supabase
-      .from('reservations')
-      .select(`
-        *,
-        user:users(*)
-      `)
-      .eq('qrcode', qrcode)
-      .single();
-    
-    if (error && error.code !== 'PGRST116') throw error;
-    return data;
-  },
-
-  // Lister toutes les réservations avec utilisateurs
-  async findAllWithUsers() {
-    const { data, error } = await supabase
-      .from('reservations')
-      .select(`
-        *,
-        user:users(*)
-      `)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data;
-  },
-
-  // Mettre à jour une réservation
-  async update(id: string, updates: Partial<Reservation>) {
-    const { data, error } = await supabase
-      .from('reservations')
-      .update(updates)
-      .eq('id', id)
-      .select(`
-        *,
-        user:users(*)
-      `)
-      .single();
-    
-    if (error) throw error;
-    return data;
-  },
-
-  // Statistiques
-  async getStats() {
-    const [
-      { count: totalUsers },
-      { count: totalReservations },
-      { count: confirmedReservations },
-      { count: cancelledReservations },
-      { count: checkedInReservations }
-    ] = await Promise.all([
-      supabase.from('users').select('*', { count: 'exact', head: true }),
-      supabase.from('reservations').select('*', { count: 'exact', head: true }),
-      supabase.from('reservations').select('*', { count: 'exact', head: true }).eq('status', 'CONFIRMED'),
-      supabase.from('reservations').select('*', { count: 'exact', head: true }).eq('status', 'CANCELLED'),
-      supabase.from('reservations').select('*', { count: 'exact', head: true }).eq('checked_in', true)
-    ]);
-
-    return {
-      totalUsers: totalUsers || 0,
-      totalReservations: totalReservations || 0,
-      confirmedReservations: confirmedReservations || 0,
-      cancelledReservations: cancelledReservations || 0,
-      checkedInReservations: checkedInReservations || 0
-    };
   }
 };

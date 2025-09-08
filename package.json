@@ -10,18 +10,17 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.2",
-    "bcryptjs": "^2.4.3",
     "framer-motion": "^11.0.0",
-    "jsonwebtoken": "^9.0.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.2",
     "lucide-react": "^0.344.0",
     "next": "^14.2.0",
-    "qrcode": "^1.5.3",
+    "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.5",
+    "@types/html2canvas": "^0.5.35",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18",

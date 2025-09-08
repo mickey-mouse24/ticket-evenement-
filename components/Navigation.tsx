@@ -6,9 +6,6 @@ import {
   Home, 
   Calendar, 
   Ticket, 
-  User, 
-  LogIn, 
-  Settings, 
   Menu, 
   X,
   Sparkles
@@ -31,7 +28,6 @@ export default function Navigation() {
     { href: '/', label: 'Accueil', icon: Home },
     { href: '/program', label: 'Programme', icon: Calendar },
     { href: '/reserve', label: 'Réserver', icon: Ticket },
-    { href: '/profile', label: 'Profil', icon: User },
   ];
 
   return (
@@ -52,7 +48,7 @@ export default function Navigation() {
             </div>
             <div className="flex flex-col">
               <span className="text-2xl font-bold gradient-text">AIKarangue</span>
-              <span className="text-xs text-gray-500 -mt-1">2026</span>
+              <span className="text-xs text-gray-500 -mt-1">2025</span>
             </div>
           </Link>
 
@@ -76,15 +72,11 @@ export default function Navigation() {
             })}
           </div>
 
-          {/* Auth Buttons */}
+          {/* CTA Button */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Link href="/login" className="btn-ghost flex items-center space-x-2">
-              <LogIn className="w-4 h-4" />
-              <span>Connexion</span>
-            </Link>
-            <Link href="/admin" className="btn-primary flex items-center space-x-2">
-              <Settings className="w-4 h-4" />
-              <span>Admin</span>
+            <Link href="/reserve" className="btn-primary flex items-center space-x-2">
+              <Ticket className="w-4 h-4" />
+              <span>Réserver maintenant</span>
             </Link>
           </div>
 
@@ -127,22 +119,14 @@ export default function Navigation() {
                 );
               })}
               
-              <div className="pt-6 px-4 space-y-3 border-t border-gray-200/50">
+              <div className="pt-6 px-4">
                 <Link 
-                  href="/login" 
-                  className="btn-ghost w-full flex items-center justify-center space-x-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span>Connexion</span>
-                </Link>
-                <Link 
-                  href="/admin" 
+                  href="/reserve" 
                   className="btn-primary w-full flex items-center justify-center space-x-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Settings className="w-4 h-4" />
-                  <span>Admin</span>
+                  <Ticket className="w-4 h-4" />
+                  <span>Réserver maintenant</span>
                 </Link>
               </div>
             </div>
