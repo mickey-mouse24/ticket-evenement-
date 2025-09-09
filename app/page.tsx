@@ -86,6 +86,15 @@ export default function HomePage() {
     return time.toString().padStart(2, '0');
   };
 
+  const downloadChronogramme = () => {
+    const link = document.createElement('a');
+    link.href = '/Chronogramme.pdf';
+    link.download = 'Chronogramme-AIKarangue-2025.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="h-screen bg-white relative overflow-hidden">
       {/* Background avec pattern et dégradé */}
@@ -255,7 +264,10 @@ export default function HomePage() {
                   </button>
                 </Link>
                 
-                <button className="group relative w-full bg-white/80 backdrop-blur-sm border-2 border-gray-300/50 hover:border-gray-400/50 text-gray-700 font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 hover:bg-white/90 active:scale-95 sm:hover:scale-105 transform shadow-sm hover:shadow-lg">
+                <button 
+                  onClick={downloadChronogramme}
+                  className="group relative w-full bg-white/80 backdrop-blur-sm border-2 border-gray-300/50 hover:border-gray-400/50 text-gray-700 font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 hover:bg-white/90 active:scale-95 sm:hover:scale-105 transform shadow-sm hover:shadow-lg"
+                >
                   <span className="flex items-center justify-center gap-2">
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
