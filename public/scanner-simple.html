@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎫 Scanner AI-Karangué | Version Simple</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .scanner-section {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .input-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #video {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            border-radius: 15px;
+            background: #000;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #166534;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 6px solid;
+        }
+        
+        .result.success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: #10b981;
+            color: #065f46;
+        }
+        
+        .result.error {
+            background: linear-gradient(135deg, #fee2e2, #fca5a5);
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .result.warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            font-weight: 500;
+            color: #1e3c72;
+        }
+        
+        .tips {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .tips h4 {
+            margin-bottom: 10px;
+            color: #166534;
+        }
+        
+        .tips ul {
+            padding-left: 20px;
+            color: #374151;
+        }
+        
+        .tips li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                🎫 Scanner AI-Karangué
+            </h1>
+            <p>Version Simple - Vérification des Tickets</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- Section Scanner Caméra -->
+            <div class="scanner-section">
+                <h2><i class="fas fa-camera"></i> Scanner avec Caméra</h2>
+                
+                <div class="status" id="camera-status">
+                    Cliquez sur "Démarrer Scanner" pour activer la caméra
+                </div>
+                
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+                
+                <div>
+                    <button class="btn btn-primary" id="startBtn" onclick="startScanner()">
+                        <i class="fas fa-play"></i> Démarrer Scanner
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" onclick="stopScanner()" disabled>
+                        <i class="fas fa-stop"></i> Arrêter Scanner
+                    </button>
+                    <button class="btn btn-secondary" onclick="testCamera()">
+                        <i class="fas fa-wrench"></i> Test Caméra
+                    </button>
+                </div>
+                
+                <div class="tips">
+                    <h4><i class="fas fa-lightbulb"></i> Conseils :</h4>
+                    <ul>
+                        <li>Assurez-vous d'avoir un bon éclairage</li>
+                        <li>Tenez le QR code stable devant la caméra</li>
+                        <li>Le scan se fait automatiquement</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Section Saisie Manuelle -->
+            <div class="input-section">
+                <h2><i class="fas fa-keyboard"></i> Saisie Manuelle</h2>
+                
+                <div class="input-group">
+                    <label for="ticketInput">ID du Ticket</label>
+                    <input type="text" id="ticketInput" placeholder="AIK-XXXXXX ou ancien ID" autocomplete="off">
+                </div>
+                
+                <div>
+                    <button class="btn btn-secondary" onclick="verifyTicket()">
+                        <i class="fas fa-search"></i> Vérifier
+                    </button>
+                    <button class="btn btn-primary" onclick="checkinTicket()" id="checkinBtn" disabled>
+                        <i class="fas fa-check-circle"></i> Check-in
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Résultats -->
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentTicket = null;
+        let isScanning = false;
+        let stream = null;
+        let codeReader = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser ZXing
+            if (typeof ZXing !== 'undefined') {
+                codeReader = new ZXing.BrowserQRCodeReader();
+                console.log('✅ ZXing initialisé');
+            } else {
+                console.error('❌ ZXing non chargé');
+            }
+            
+            // Focus sur l'input
+            document.getElementById('ticketInput').focus();
+            
+            // Entrée pour vérifier
+            document.getElementById('ticketInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyTicket();
+                }
+            });
+        });
+
+        async function testCamera() {
+            const status = document.getElementById('camera-status');
+            status.textContent = '🔧 Test de la caméra...';
+            
+            try {
+                // Test d'accès à la caméra
+                const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                
+                // Arrêter immédiatement
+                testStream.getTracks().forEach(track => track.stop());
+                
+                status.innerHTML = `
+                    ✅ <strong>Test réussi !</strong><br>
+                    <small>La caméra fonctionne correctement</small>
+                `;
+                
+            } catch (error) {
+                console.error('Erreur test caméra:', error);
+                status.innerHTML = `
+                    ❌ <strong>Test échoué</strong><br>
+                    <small>${error.message}</small>
+                `;
+            }
+        }
+
+        async function startScanner() {
+            if (isScanning) return;
+            
+            const video = document.getElementById('video');
+            const status = document.getElementById('camera-status');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            try {
+                status.textContent = 'Démarrage de la caméra...';
+                startBtn.disabled = true;
+                
+                // Obtenir l'accès à la caméra
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    }
+                });
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                video.play();
+                
+                isScanning = true;
+                stopBtn.disabled = false;
+                status.textContent = '📷 Scanner actif - Pointez vers un QR code';
+                
+                // Démarrer la détection
+                if (codeReader) {
+                    startDetection();
+                } else {
+                    // Fallback manuel
+                    startManualDetection();
+                }
+                
+            } catch (error) {
+                console.error('Erreur démarrage scanner:', error);
+                status.innerHTML = `
+                    ❌ <strong>Erreur:</strong> ${error.message}<br>
+                    <small>Vérifiez les permissions de votre navigateur</small>
+                `;
+                resetScanner();
+            }
+        }
+
+        function startDetection() {
+            if (!isScanning || !codeReader) return;
+            
+            const video = document.getElementById('video');
+            
+            codeReader.decodeFromVideoDevice(null, video.id, (result, error) => {
+                if (result) {
+                    console.log('QR détecté:', result.text);
+                    onQRDetected(result.text);
+                }
+                // Ignorer les erreurs de scan continu
+            });
+        }
+
+        function startManualDetection() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function scanFrame() {
+                if (!isScanning) return;
+                
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.drawImage(video, 0, 0);
+                
+                // Répéter toutes les 500ms
+                setTimeout(scanFrame, 500);
+            }
+            
+            video.addEventListener('loadedmetadata', scanFrame);
+        }
+
+        function onQRDetected(qrText) {
+            stopScanner();
+            
+            // Remplir l'input
+            document.getElementById('ticketInput').value = qrText;
+            
+            // Afficher succès
+            showResult(`📱 QR Code scanné: ${qrText}`, 'success');
+            
+            // Auto-vérifier
+            setTimeout(verifyTicket, 1000);
+        }
+
+        function stopScanner() {
+            isScanning = false;
+            
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            if (codeReader) {
+                codeReader.reset();
+            }
+            
+            const video = document.getElementById('video');
+            video.style.display = 'none';
+            video.srcObject = null;
+            
+            resetScanner();
+            
+            document.getElementById('camera-status').textContent = 'Scanner arrêté';
+        }
+
+        function resetScanner() {
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+
+        async function verifyTicket() {
+            const input = document.getElementById('ticketInput');
+            const ticketId = input.value.trim().toUpperCase();
+            
+            if (!ticketId) {
+                showResult('Veuillez entrer un ID de ticket', 'error');
+                return;
+            }
+
+            showResult('Vérification en cours...', 'warning');
+            
+            try {
+                let uniqueId = ticketId;
+                
+                // Conversion si nécessaire
+                if (!uniqueId.startsWith('AIK-') || uniqueId.length !== 10) {
+                    const convertResponse = await fetch('/api/convert-ticket-id', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ticketId: ticketId })
+                    });
+                    
+                    if (convertResponse.ok) {
+                        const convertResult = await convertResponse.json();
+                        if (convertResult.success) {
+                            uniqueId = convertResult.uniqueId;
+                            input.value = uniqueId;
+                        }
+                    }
+                }
+                
+                // Vérification
+                const response = await fetch('/api/verify-unique-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uniqueId: uniqueId,
+                        action: 'verify'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.status === 'valid') {
+                    currentTicket = result.ticket;
+                    showTicketInfo(result);
+                    document.getElementById('checkinBtn').disabled = false;
+                } else {
+                    currentTicket = null;
+                    showResult(`❌ ${result.message}`, 'error');
+                    document.getElementById('checkinBtn').disabled = true;
+                }
+                
+            } catch (error) {
+                showResult(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkinTicket() {
+            if (!currentTicket) return;
+            
+            showResult('Check-in en cours...', 'warning');
+            
+            try {
+                const response = await fetch('/api/verify-unique-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uniqueId: currentTicket.unique_id,
+                        action: 'checkin'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(`✅ Check-in réussi pour ${currentTicket.name}!`, 'success');
+                    
+                    // Reset après 2 secondes
+                    setTimeout(() => {
+                        document.getElementById('ticketInput').value = '';
+                        document.getElementById('result').innerHTML = '';
+                        currentTicket = null;
+                        document.getElementById('checkinBtn').disabled = true;
+                    }, 2000);
+                } else {
+                    showResult(`❌ Erreur check-in: ${result.message}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div class="result ${type}">
+                    ${message}
+                </div>
+            `;
+        }
+
+        function showTicketInfo(result) {
+            const ticket = result.ticket;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = `
+                <div class="result success">
+                    <h3>✅ Ticket Valide</h3>
+                    <p><strong>Nom:</strong> ${ticket.name}</p>
+                    <p><strong>Email:</strong> ${ticket.email}</p>
+                    <p><strong>Entreprise:</strong> ${ticket.company}</p>
+                    <p><strong>ID:</strong> ${ticket.unique_id}</p>
+                    <p><strong>Statut:</strong> ${ticket.checked_in ? 
+                        '<span style="color: #059669;">✅ Déjà enregistré</span>' : 
+                        '<span style="color: #d97706;">⏳ En attente</span>'
+                    }</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

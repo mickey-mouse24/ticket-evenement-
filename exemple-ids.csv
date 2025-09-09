@@ -1,0 +1,4 @@
+id,nom,email,telephone,entreprise,fonction
+"USER001","Mamadou Diop","mamadou.diop@example.sn","+221 77 123 45 67","Orange Sénégal","Développeur"
+"USER002","Aminata Fall","aminata.fall@example.sn","+221 78 234 56 78","Sonatel","Designer"
+"USER003","Ousmane Sy","ousmane.sy@example.sn","+221 70 345 67 89","UCAD","Professeur"

@@ -1,123 +1,238 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { userQueries, reservationQueries } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import QRCode from 'qrcode';
+import { addValidTicket } from '@/lib/tickets';
+// Import de la fonction d'assignation d'ID
+const { assignIdToTicket } = require('../../../scripts/generate-unique-ids');
+
+// Import direct des fonctions de gestion des places
+const fs = require('fs').promises;
+const path = require('path');
+
+const PLACES_FILE = path.join(process.cwd(), 'data', 'places.json');
+
+async function getAvailablePlaces() {
+  try {
+    const data = await fs.readFile(PLACES_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Erreur lors de la lecture des places:', error);
+    return { total: 1000, reserved: 0, available: 1000 };
+  }
+}
+
+async function reservePlace() {
+  try {
+    const data = await fs.readFile(PLACES_FILE, 'utf8');
+    const places = JSON.parse(data);
+    
+    if (places.available <= 0) {
+      throw new Error('Plus de places disponibles');
+    }
+    
+    places.reserved += 1;
+    places.available = places.total - places.reserved;
+    
+    await fs.writeFile(PLACES_FILE, JSON.stringify(places, null, 2));
+    return places;
+  } catch (error) {
+    console.error('Erreur lors de la réservation:', error);
+    throw error;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('API POST /reservations appelée');
+    console.log('API: Début de la requête POST');
+    
     const body = await request.json();
-    console.log('Body reçu:', body);
-    const { name, email, phone, company } = body;
+    console.log('API: Body reçu:', body);
 
-    if (!name || !email || !phone) {
-      return NextResponse.json(
-        { error: 'Nom, email et téléphone sont obligatoires' },
-        { status: 400 }
-      );
+    const { name, email, phone, company, fonction } = body;
+
+    // Validation des champs requis
+    if (!name || !email || !phone || !company) {
+      console.log('API: Champs manquants');
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Tous les champs sont requis' 
+      }, { status: 400 });
     }
 
-    // En mode développement, créer une réservation factice
+    console.log('API: Validation réussie');
+
+    // Vérifier les places disponibles
+    const placesInfo = await getAvailablePlaces();
+    if (placesInfo.available <= 0) {
+      console.log('API: Plus de places disponibles');
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Désolé, il n\'y a plus de places disponibles pour cet événement.' 
+      }, { status: 400 });
+    }
+
+    console.log(`API: ${placesInfo.available} places disponibles`);
+
+    // Mode développement - génération de données mock
     if (process.env.NODE_ENV === 'development') {
-      console.log('Mode développement: création d\'une réservation factice');
+      console.log('API: Mode développement - génération de données mock');
+      
+      const ticketId = Math.random().toString(36).substr(2, 9);
+      
+      // Assigner un ID unique au ticket
+      const uniqueId = await assignIdToTicket(ticketId);
+      if (!uniqueId) {
+        console.log('API: Aucun ID unique disponible');
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Désolé, aucun ID unique disponible. Contactez l\'organisateur.' 
+        }, { status: 500 });
+      }
       
       const mockReservation = {
-        id: `DEV-${Date.now()}`,
-        qrcode: `AIK2025-DEV-${Date.now()}`,
-        status: 'CONFIRMED'
+        id: ticketId,
+        unique_id: uniqueId, // ID unique assigné
+        name,
+        email,
+        phone,
+        company,
+        fonction: fonction || 'Non spécifié',
+        qrcode: `AIK2025-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        checked_in: false,
+        created_at: new Date().toISOString()
       };
 
-      // Générer le QR code
-      const qrCodeDataUrl = await QRCode.toDataURL(mockReservation.qrcode, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      });
+      console.log('API: Réservation mock créée:', mockReservation);
 
-      return NextResponse.json({
-        success: true,
-        reservation: mockReservation,
-        qr: qrCodeDataUrl
-      });
+      // Génération du QR code
+      try {
+        const qrCodeDataUrl = await QRCode.toDataURL(mockReservation.qrcode, {
+          width: 256,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF',
+          },
+        });
+
+        console.log('API: QR code généré avec succès');
+
+        // Décrémenter les places disponibles
+        const updatedPlaces = await reservePlace();
+        console.log(`API: Place réservée. Places restantes: ${updatedPlaces.available}`);
+
+        // Ajouter le ticket à la base de données pour vérification
+        await addValidTicket(mockReservation);
+        console.log(`API: Ticket ajouté à la base de vérification`);
+
+        return NextResponse.json({
+          success: true,
+          reservation: mockReservation,
+          qr: qrCodeDataUrl,
+          placesRestantes: updatedPlaces.available
+        });
+      } catch (qrError) {
+        console.error('API: Erreur génération QR code:', qrError);
+        return NextResponse.json({
+          success: false,
+          message: 'Erreur lors de la génération du QR code'
+        }, { status: 500 });
+      }
     }
 
-    // Code de production avec Supabase
-    try {
-      // Vérifier si l'utilisateur existe déjà
-      let user = await userQueries.findByEmail(email);
+    // Mode production - utilisation de Supabase
+    console.log('API: Mode production - utilisation de Supabase');
 
-      if (!user) {
-        // Créer un nouvel utilisateur
-        user = await userQueries.create({
+    const qrcode = `AIK2025-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    
+    const { data: reservation, error } = await supabase
+      .from('reservations')
+      .insert([
+        {
           name,
           email,
           phone,
-          role: 'ATTENDEE'
-        });
-      }
+          company,
+          fonction: fonction || 'Non spécifié',
+          qrcode,
+          checked_in: false,
+        }
+      ])
+      .select()
+      .single();
 
-      // Vérifier si l'utilisateur a déjà une réservation
-      const existingReservations = await reservationQueries.findByUserId(user.id);
+    if (error) {
+      console.error('API: Erreur Supabase:', error);
+      return NextResponse.json({
+        success: false,
+        message: 'Erreur lors de la création de la réservation'
+      }, { status: 500 });
+    }
 
-      if (existingReservations && existingReservations.length > 0) {
-        return NextResponse.json(
-          { error: 'Vous avez déjà une réservation' },
-          { status: 400 }
-        );
-      }
+    console.log('API: Réservation créée avec succès:', reservation);
 
-      // Créer la réservation
-      const reservation = await reservationQueries.create({
-        user_id: user.id,
-        qrcode: `AIK2025-${user.id}-${Date.now()}`,
-        status: 'CONFIRMED'
-      });
-
-      // Générer le QR code
-      const qrCodeDataUrl = await QRCode.toDataURL(reservation.qrcode, {
-        width: 300,
+    // Génération du QR code
+    try {
+      const qrCodeDataUrl = await QRCode.toDataURL(qrcode, {
+        width: 256,
         margin: 2,
         color: {
           dark: '#000000',
-          light: '#FFFFFF'
-        }
+          light: '#FFFFFF',
+        },
       });
+
+      console.log('API: QR code généré avec succès');
+
+      // Décrémenter les places disponibles
+      const updatedPlaces = await reservePlace();
+      console.log(`API: Place réservée. Places restantes: ${updatedPlaces.available}`);
+
+      // Ajouter le ticket à la base de données pour vérification
+      await addValidTicket(reservation);
+      console.log(`API: Ticket ajouté à la base de vérification`);
 
       return NextResponse.json({
         success: true,
-        reservation: {
-          id: reservation.id,
-          qrcode: reservation.qrcode,
-          status: reservation.status
-        },
-        qr: qrCodeDataUrl
+        reservation,
+        qr: qrCodeDataUrl,
+        placesRestantes: updatedPlaces.available
       });
-    } catch (supabaseError) {
-      console.error('Erreur Supabase:', supabaseError);
-      throw supabaseError;
+    } catch (qrError) {
+      console.error('API: Erreur génération QR code:', qrError);
+      return NextResponse.json({
+        success: false,
+        message: 'Erreur lors de la génération du QR code'
+      }, { status: 500 });
     }
 
   } catch (error) {
-    console.error('Erreur lors de la création de la réservation:', error);
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur: ' + (error as Error).message },
-      { status: 500 }
-    );
+    console.error('API: Erreur générale:', error);
+    return NextResponse.json({
+      success: false,
+      message: 'Erreur interne du serveur'
+    }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const reservations = await reservationQueries.findAllWithUsers();
-    return NextResponse.json({ reservations });
-
+    console.log('API GET: Début de la requête GET');
+    const placesInfo = await getAvailablePlaces();
+    console.log('API GET: Places info:', placesInfo);
+    
+    const response = {
+      success: true,
+      places: placesInfo
+    };
+    
+    console.log('API GET: Réponse:', response);
+    return NextResponse.json(response);
   } catch (error) {
-    console.error('Erreur lors de la récupération des réservations:', error);
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
-    );
+    console.error('API GET: Erreur lors de la récupération des places:', error);
+    return NextResponse.json({
+      success: false,
+      message: 'Erreur lors de la récupération des places disponibles'
+    }, { status: 500 });
   }
 }

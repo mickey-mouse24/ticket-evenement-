@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎫 Scanner AI-Karangué | Vérification des Tickets</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(-50px, -50px) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
+        
+        .header > * { position: relative; z-index: 1; }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .main-content {
+            padding: 40px 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+        
+        .scanner-section {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .scanner-section h2 {
+            color: #1e3c72;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #1e3c72;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .input-group input::placeholder {
+            color: #9ca3af;
+            font-weight: normal;
+            letter-spacing: normal;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-verify {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-verify:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-checkin {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-checkin:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: #92400e;
+        }
+        
+        .stats-section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(146, 64, 14, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #92400e;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 6px solid;
+            animation: slideIn 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            animation: shimmer 2s ease-in-out;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result.success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: #10b981;
+            color: #065f46;
+        }
+        
+        .result.error {
+            background: linear-gradient(135deg, #fee2e2, #fca5a5);
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        
+        .result.warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        
+        .result-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .result-message {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-details {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .result-details h4 {
+            margin-bottom: 10px;
+            color: inherit;
+            font-size: 1.1em;
+        }
+        
+        .result-details p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .history-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        .history-section h2 {
+            color: #374151;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .history-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .history-item.success { border-color: #10b981; }
+        .history-item.error { border-color: #ef4444; }
+        .history-item.warning { border-color: #f59e0b; }
+        
+        .history-info h4 {
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .history-info p {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+        
+        .history-time {
+            color: #9ca3af;
+            font-size: 0.85em;
+            text-align: right;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-btn {
+            padding: 8px 15px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #1e3c72;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .footer {
+            background: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .logo {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            margin-right: 15px;
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '🎫';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div class="logo"></div>
+                Scanner AI-Karangué
+            </h1>
+            <p>Vérification et contrôle d'accès pour l'événement AI-Karangué 2025</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- Section Scanner -->
+            <div class="scanner-section">
+                <h2><i class="fas fa-qrcode"></i> Scanner de Tickets</h2>
+                
+                <div class="input-group">
+                    <label for="ticketInput">ID du Ticket ou QR Code</label>
+                    <input 
+                        type="text" 
+                        id="ticketInput" 
+                        placeholder="AIK-XXXXXX ou ancien ID"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-verify" onclick="verifyTicket()">
+                        <i class="fas fa-search"></i>
+                        Vérifier
+                    </button>
+                    <button class="btn btn-checkin" onclick="checkinTicket()" disabled>
+                        <i class="fas fa-check-circle"></i>
+                        Check-in
+                    </button>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="clearInput()">
+                        <i class="fas fa-eraser"></i> Effacer
+                    </button>
+                    <button class="quick-btn" onclick="focusInput()">
+                        <i class="fas fa-keyboard"></i> Focus
+                    </button>
+                    <button class="quick-btn" onclick="refreshStats()">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                </div>
+                
+                <div id="result"></div>
+            </div>
+            
+            <!-- Section Statistiques -->
+            <div class="stats-section">
+                <h2><i class="fas fa-chart-bar"></i> Statistiques Live</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTickets">-</div>
+                        <div class="stat-label">Total Tickets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="checkedIn">-</div>
+                        <div class="stat-label">Check-ins</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pending">-</div>
+                        <div class="stat-label">En Attente</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="successRate">-</div>
+                        <div class="stat-label">Taux (%)</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="quick-btn" onclick="exportData()">
+                        <i class="fas fa-download"></i> Exporter Données
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Section Historique -->
+            <div class="history-section">
+                <h2><i class="fas fa-history"></i> Historique des Vérifications</h2>
+                <div id="history">
+                    <p style="text-align: center; color: #6b7280; padding: 20px;">
+                        Aucune vérification effectuée pour le moment
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>AI-Karangué 2025</strong> - Système de Vérification des Tickets</p>
+            <p>20 septembre 2025 • CICAD - RUFISQUE • 10h00 - 14h00</p>
+        </div>
+    </div>
+
+    <script>
+        let currentTicket = null;
+        let history = [];
+        let stats = {
+            total: 0,
+            checkedIn: 0,
+            pending: 0
+        };
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            focusInput();
+            refreshStats();
+            
+            // Auto-focus sur l'input quand on tape
+            document.addEventListener('keydown', function(e) {
+                if (e.target !== document.getElementById('ticketInput') && 
+                    e.key.match(/[a-zA-Z0-9-]/)) {
+                    focusInput();
+                }
+            });
+            
+            // Enter pour vérifier
+            document.getElementById('ticketInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyTicket();
+                }
+            });
+        });
+
+        function focusInput() {
+            const input = document.getElementById('ticketInput');
+            input.focus();
+            input.select();
+        }
+
+        function clearInput() {
+            document.getElementById('ticketInput').value = '';
+            document.getElementById('result').innerHTML = '';
+            currentTicket = null;
+            updateButtons();
+            focusInput();
+        }
+
+        function updateButtons() {
+            const checkinBtn = document.querySelector('.btn-checkin');
+            checkinBtn.disabled = !currentTicket || currentTicket.checked_in;
+        }
+
+        async function verifyTicket() {
+            const input = document.getElementById('ticketInput');
+            const ticketId = input.value.trim().toUpperCase();
+            
+            if (!ticketId) {
+                showResult('Veuillez entrer un ID de ticket', 'error');
+                return;
+            }
+
+            showLoading('Vérification en cours...');
+            
+            try {
+                let uniqueId = ticketId;
+                
+                // Si ce n'est pas un format AIK-XXXXXX, essayer la conversion
+                if (!uniqueId.startsWith('AIK-') || uniqueId.length !== 10) {
+                    const convertResponse = await fetch('/api/convert-ticket-id', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ticketId: ticketId })
+                    });
+                    
+                    if (convertResponse.ok) {
+                        const convertResult = await convertResponse.json();
+                        if (convertResult.success) {
+                            uniqueId = convertResult.uniqueId;
+                            showResult(`🔄 ID converti: ${ticketId} → ${uniqueId}`, 'warning');
+                            input.value = uniqueId;
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                    }
+                }
+                
+                // Vérification du ticket
+                const response = await fetch('/api/verify-unique-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uniqueId: uniqueId,
+                        action: 'verify'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.status === 'valid') {
+                    currentTicket = result.ticket;
+                    showTicketInfo(result);
+                    addToHistory(uniqueId, 'Vérification réussie', 'success', result.ticket.name);
+                } else {
+                    currentTicket = null;
+                    showResult(`❌ ${result.message}`, 'error');
+                    addToHistory(uniqueId, result.message, 'error');
+                }
+                
+                updateButtons();
+                refreshStats();
+                
+            } catch (error) {
+                showResult(`❌ Erreur de connexion: ${error.message}`, 'error');
+                addToHistory(ticketId, 'Erreur de connexion', 'error');
+            }
+        }
+
+        async function checkinTicket() {
+            if (!currentTicket) return;
+            
+            showLoading('Check-in en cours...');
+            
+            try {
+                const response = await fetch('/api/verify-unique-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uniqueId: currentTicket.unique_id,
+                        action: 'checkin'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentTicket.checked_in = true;
+                    showResult(`✅ Check-in réussi pour ${currentTicket.name}!`, 'success');
+                    addToHistory(currentTicket.unique_id, 'Check-in réussi', 'success', currentTicket.name);
+                    
+                    // Auto-clear après 2 secondes
+                    setTimeout(() => {
+                        clearInput();
+                    }, 2000);
+                } else {
+                    showResult(`❌ Erreur check-in: ${result.message}`, 'error');
+                    addToHistory(currentTicket.unique_id, result.message, 'error', currentTicket.name);
+                }
+                
+                updateButtons();
+                refreshStats();
+                
+            } catch (error) {
+                showResult(`❌ Erreur de connexion: ${error.message}`, 'error');
+            }
+        }
+
+        function showLoading(message) {
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div class="result warning">
+                    <div class="result-message">
+                        <div class="loading"></div>
+                        ${message}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-times-circle',
+                warning: 'fas fa-exclamation-triangle'
+            };
+            
+            result.innerHTML = `
+                <div class="result ${type}">
+                    <div class="result-message">
+                        <i class="${icons[type]} result-icon"></i>
+                        ${message}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showTicketInfo(result) {
+            const ticket = result.ticket;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = `
+                <div class="result success">
+                    <div class="result-message">
+                        <i class="fas fa-check-circle result-icon"></i>
+                        Ticket Valide ✨
+                    </div>
+                    <div class="result-details">
+                        <h4><i class="fas fa-user"></i> Informations du Participant</h4>
+                        <p><strong>Nom:</strong> ${ticket.name}</p>
+                        <p><strong>Email:</strong> ${ticket.email}</p>
+                        <p><strong>Entreprise:</strong> ${ticket.company}</p>
+                        <p><strong>Fonction:</strong> ${ticket.fonction}</p>
+                        <p><strong>ID Unique:</strong> ${ticket.unique_id}</p>
+                        <p><strong>Statut:</strong> ${ticket.checked_in ? 
+                            '<span style="color: #059669;">✅ Déjà enregistré</span>' : 
+                            '<span style="color: #d97706;">⏳ En attente de check-in</span>'
+                        }</p>
+                        ${ticket.checked_in_at ? 
+                            `<p><strong>Check-in:</strong> ${new Date(ticket.checked_in_at).toLocaleString('fr-FR')}</p>` : 
+                            ''
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        function addToHistory(id, message, type, name = '') {
+            const historyItem = {
+                id,
+                message,
+                type,
+                name,
+                timestamp: new Date()
+            };
+            
+            history.unshift(historyItem);
+            if (history.length > 10) history.pop();
+            
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyDiv = document.getElementById('history');
+            
+            if (history.length === 0) {
+                historyDiv.innerHTML = `
+                    <p style="text-align: center; color: #6b7280; padding: 20px;">
+                        Aucune vérification effectuée pour le moment
+                    </p>
+                `;
+                return;
+            }
+            
+            historyDiv.innerHTML = history.map(item => `
+                <div class="history-item ${item.type}">
+                    <div class="history-info">
+                        <h4>${item.name ? item.name : item.id}</h4>
+                        <p>${item.message}</p>
+                    </div>
+                    <div class="history-time">
+                        ${item.timestamp.toLocaleTimeString('fr-FR')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/verify-unique-id');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.stats) {
+                        updateStatsDisplay(data.stats);
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur refresh stats:', error);
+            }
+        }
+
+        function updateStatsDisplay(apiStats) {
+            document.getElementById('totalTickets').textContent = apiStats.tickets_with_unique_id || '-';
+            document.getElementById('checkedIn').textContent = apiStats.checked_in_unique_ids || '-';
+            document.getElementById('pending').textContent = apiStats.pending_unique_ids || '-';
+            
+            const rate = apiStats.tickets_with_unique_id > 0 ? 
+                Math.round((apiStats.checked_in_unique_ids / apiStats.tickets_with_unique_id) * 100) : 0;
+            document.getElementById('successRate').textContent = rate + '%';
+        }
+
+        function exportData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                stats: stats,
+                history: history
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `aikarangue-scanner-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

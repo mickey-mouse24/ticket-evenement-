@@ -1,0 +1,11 @@
+# Logo PNG - Instructions
+
+Placez votre logo PNG ici avec le nom : logo.png
+
+Spécifications recommandées :
+- Format : PNG avec transparence
+- Taille : 48x48 pixels minimum (ou plus grand, sera redimensionné)
+- Fond : Transparent de préférence
+- Style : Adapté au thème bleu/violet de l'application
+
+Le logo apparaîtra automatiquement dans la navigation une fois le fichier logo.png ajouté dans ce dossier public/.

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "USER001",
+    "nom": "Mamadou Diop",
+    "email": "mamadou.diop@example.sn",
+    "telephone": "+221 77 123 45 67",
+    "entreprise": "Orange Sénégal",
+    "fonction": "Développeur"
+  },
+  {
+    "id": "USER002",
+    "nom": "Aminata Fall",
+    "email": "aminata.fall@example.sn",
+    "telephone": "+221 78 234 56 78",
+    "entreprise": "Sonatel",
+    "fonction": "Designer"
+  },
+  {
+    "id": "USER003",
+    "nom": "Ousmane Sy",
+    "email": "ousmane.sy@example.sn",
+    "telephone": "+221 70 345 67 89",
+    "entreprise": "UCAD",
+    "fonction": "Professeur"
+  }
+]

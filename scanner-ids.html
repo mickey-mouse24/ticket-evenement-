@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner IDs AI-Karangué</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>');
+        }
+        
+        .header > * { position: relative; z-index: 1; }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .scanner-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 3px solid #e9ecef;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .scanner-title {
+            font-size: 1.8em;
+            color: #2a5298;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: stretch;
+        }
+        
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.25);
+            transform: translateY(-2px);
+        }
+        
+        .input-wrapper input::placeholder {
+            color: #999;
+            text-transform: none;
+            letter-spacing: normal;
+            font-family: Arial, sans-serif;
+            font-weight: normal;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-verify {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .btn-verify:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.4);
+        }
+        
+        .btn-checkin {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+        
+        .btn-checkin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40,167,69,0.4);
+        }
+        
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 6px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result.success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .result.error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .result.warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-color: #ffc107;
+            color: #856404;
+        }
+        
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-icon {
+            font-size: 1.2em;
+        }
+        
+        .ticket-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid rgba(0,0,0,0.05);
+        }
+        
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        
+        .unique-id-display {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #495057;
+            text-align: center;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            border: 2px solid #ced4da;
+        }
+        
+        .ticket-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .info-label {
+            font-size: 0.85em;
+            color: #6c757d;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #212529;
+            font-weight: 600;
+            word-break: break-word;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        
+        .status-valid {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        
+        .status-used {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .stats-title {
+            font-size: 1.5em;
+            color: #2a5298;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .quick-actions {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px solid #2196f3;
+        }
+        
+        .quick-actions h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .quick-actions button {
+            background: white;
+            border: 2px solid #2196f3;
+            color: #1976d2;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .quick-actions button:hover {
+            background: #2196f3;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticket-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Scanner IDs AI-Karangué</h1>
+            <p>Vérification instantanée des IDs uniques</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="scanner-section">
+                <div class="scanner-title">🎯 Vérification d'ID Unique</div>
+                
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="uniqueIdInput" 
+                            placeholder="Entrez l'ID unique (ex: AIK-ABC123)"
+                            maxlength="10"
+                        />
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-verify" onclick="verifyId()">
+                        <span class="btn-text">🔍 Vérifier ID</span>
+                    </button>
+                    <button class="btn btn-checkin" onclick="checkinId()">
+                        <span class="btn-text">✅ Check-in</span>
+                    </button>
+                </div>
+                
+                <div class="quick-actions">
+                    <h4>🚀 Actions Rapides</h4>
+                    <button onclick="loadStats()">📊 Actualiser Stats</button>
+                    <button onclick="clearResult()">🗑️ Effacer Résultat</button>
+                    <button onclick="focusInput()">⌨️ Focus Input</button>
+                </div>
+            </div>
+            
+            <div id="resultContainer"></div>
+            
+            <div id="statsContainer" class="stats-section">
+                <div class="stats-title">📊 Statistiques en Temps Réel</div>
+                <div id="statsContent" class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">---</div>
+                        <div class="stat-label">Chargement...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+        
+        // Charger les statistiques au démarrage
+        window.addEventListener('load', () => {
+            loadStats();
+            focusInput();
+        });
+        
+        function showResult(message, type = 'info', data = null) {
+            const container = document.getElementById('resultContainer');
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            let html = `
+                <div class="result ${type}">
+                    <h3>
+                        <span class="result-icon">${icons[type] || icons.info}</span>
+                        ${message}
+                    </h3>
+            `;
+            
+            if (data && data.ticket) {
+                const ticket = data.ticket;
+                const checkinDate = ticket.checked_in_at ? 
+                    new Date(ticket.checked_in_at).toLocaleString('fr-FR') : 'Non utilisé';
+                
+                html += `
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <div class="unique-id-display">${data.id || ticket.unique_id}</div>
+                            <div class="status-badge ${ticket.checked_in ? 'status-used' : 'status-valid'}">
+                                ${ticket.checked_in ? '🔒 Utilisé' : '🟢 Valide'}
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-info">
+                            <div class="info-item">
+                                <div class="info-label">👤 Participant</div>
+                                <div class="info-value">${ticket.name || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">📧 Email</div>
+                                <div class="info-value">${ticket.email || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">📱 Téléphone</div>
+                                <div class="info-value">${ticket.phone || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">🏢 Entreprise</div>
+                                <div class="info-value">${ticket.company || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">💼 Fonction</div>
+                                <div class="info-value">${ticket.fonction || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">🕒 Check-in</div>
+                                <div class="info-value">${checkinDate}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+            
+            // Auto-clear après 15 secondes pour les succès
+            if (type === 'success') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 15000);
+            }
+        }
+        
+        function setLoading(loading) {
+            isLoading = loading;
+            const buttons = document.querySelectorAll('.btn');
+            const input = document.getElementById('uniqueIdInput');
+            
+            buttons.forEach(btn => {
+                btn.disabled = loading;
+                const textSpan = btn.querySelector('.btn-text');
+                if (loading) {
+                    textSpan.innerHTML = '<span class="loading-spinner"></span>Traitement...';
+                } else {
+                    // Restore original text
+                    if (btn.classList.contains('btn-verify')) {
+                        textSpan.innerHTML = '🔍 Vérifier ID';
+                    } else {
+                        textSpan.innerHTML = '✅ Check-in';
+                    }
+                }
+            });
+            
+            input.disabled = loading;
+        }
+        
+        async function verifyId() {
+            const uniqueId = document.getElementById('uniqueIdInput').value.trim().toUpperCase();
+            
+            if (!uniqueId) {
+                showResult('Veuillez entrer un ID unique à vérifier', 'error');
+                return;
+            }
+            
+            if (!uniqueId.startsWith('AIK-') || uniqueId.length !== 10) {
+                showResult('Format d\'ID invalide. Utilisez le format AIK-XXXXXX', 'error');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/verify-unique-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uniqueId: uniqueId,
+                        action: 'verify'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data.message, 'success', data);
+                } else {
+                    const messageType = data.status === 'used' ? 'warning' : 'error';
+                    showResult(data.message, messageType, data);
+                }
+                
+                // Actualiser les stats
+                setTimeout(loadStats, 1000);
+                
+            } catch (error) {
+                showResult(`Erreur de connexion: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        async function checkinId() {
+            const uniqueId = document.getElementById('uniqueIdInput').value.trim().toUpperCase();
+            
+            if (!uniqueId) {
+                showResult('Veuillez entrer un ID unique pour le check-in', 'error');
+                return;
+            }
+            
+            if (!confirm(`Confirmer le check-in pour l'ID "${uniqueId}" ?`)) {
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/verify-unique-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uniqueId: uniqueId,
+                        action: 'checkin'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data.message, 'success', data);
+                    // Vider le champ après un check-in réussi
+                    document.getElementById('uniqueIdInput').value = '';
+                } else {
+                    const messageType = data.status === 'used' ? 'warning' : 'error';
+                    showResult(data.message, messageType, data);
+                }
+                
+                // Actualiser les stats
+                setTimeout(loadStats, 1000);
+                
+            } catch (error) {
+                showResult(`Erreur de connexion: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/verify-unique-id');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    
+                    document.getElementById('statsContent').innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-number">${stats.total_unique_ids}</div>
+                            <div class="stat-label">IDs Générés</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${stats.assigned_ids}</div>
+                            <div class="stat-label">IDs Assignés</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${stats.available_ids}</div>
+                            <div class="stat-label">IDs Disponibles</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${stats.checked_in_unique_ids}</div>
+                            <div class="stat-label">Check-ins</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${stats.pending_unique_ids}</div>
+                            <div class="stat-label">En Attente</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${stats.usage_rate}%</div>
+                            <div class="stat-label">Taux Usage</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur stats:', error);
+                document.getElementById('statsContent').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">❌</div>
+                        <div class="stat-label">Erreur</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function clearResult() {
+            document.getElementById('resultContainer').innerHTML = '';
+        }
+        
+        function focusInput() {
+            document.getElementById('uniqueIdInput').focus();
+        }
+        
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if (isLoading) return;
+            
+            if (e.key === 'Enter') {
+                if (e.ctrlKey || e.metaKey) {
+                    checkinId();
+                } else {
+                    verifyId();
+                }
+            } else if (e.key === 'Escape') {
+                clearResult();
+                focusInput();
+            } else if (e.key === 'F5') {
+                e.preventDefault();
+                loadStats();
+            }
+        });
+        
+        // Auto-format de l'input
+        document.getElementById('uniqueIdInput').addEventListener('input', (e) => {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+            
+            // Auto-ajouter AIK- si pas présent
+            if (value && !value.startsWith('AIK-')) {
+                if (value.length <= 6) {
+                    value = 'AIK-' + value;
+                }
+            }
+            
+            e.target.value = value;
+        });
+        
+        // Focus automatique
+        focusInput();
+        
+        // Actualiser les stats toutes les 30 secondes
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 {
-  "/reserve/page": "app/reserve/page.js",
   "/page": "app/page.js",
-  "/program/page": "app/program/page.js"
+  "/reserve/page": "app/reserve/page.js",
+  "/api/convert-ticket-id/route": "app/api/convert-ticket-id/route.js",
+  "/api/verify-unique-id/route": "app/api/verify-unique-id/route.js",
+  "/api/create-reservation/route": "app/api/create-reservation/route.js"
 }

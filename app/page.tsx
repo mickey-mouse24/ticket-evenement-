@@ -1,246 +1,276 @@
 'use client';
-import Countdown from '@/components/Countdown';
-import Link from 'next/link';
-import { 
-  ArrowRight, 
-  Zap, 
-  Users, 
-  BookOpen, 
-  Calendar,
-  MapPin,
-  Star,
-  Sparkles,
-  Brain,
-  Rocket,
-  Trophy
-} from 'lucide-react';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+export default function HomePage() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  
+  const [flipAnimation, setFlipAnimation] = useState({
+    days: false,
+    hours: false,
+    minutes: false,
+    seconds: false
+  });
+
+  const [placesRestantes, setPlacesRestantes] = useState(null);
+
+  useEffect(() => {
+    const targetDate = new Date('2025-09-20T09:00:00Z').getTime();
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        const newTimeLeft = { days, hours, minutes, seconds };
+        
+        // Déclencher l'animation flip si les valeurs changent
+        setFlipAnimation(prev => ({
+          days: timeLeft.days !== days,
+          hours: timeLeft.hours !== hours,
+          minutes: timeLeft.minutes !== minutes,
+          seconds: timeLeft.seconds !== seconds
+        }));
+
+        setTimeLeft(newTimeLeft);
+        
+        // Réinitialiser les animations après un délai
+        setTimeout(() => {
+          setFlipAnimation({ days: false, hours: false, minutes: false, seconds: false });
+        }, 600);
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Récupérer les places disponibles
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const response = await fetch('/api/reservations');
+        const data = await response.json();
+        if (data.success) {
+          setPlacesRestantes(data.places);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des places:', error);
+      }
+    };
+
+    fetchPlaces();
+    
+    // Actualiser les places toutes les 30 secondes
+    const interval = setInterval(fetchPlaces, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (time: number) => {
+    return time.toString().padStart(2, '0');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 relative overflow-hidden">
-      {/* Background decorations */}
+    <div className="min-h-screen bg-gradient-to-br from-teal-600 via-blue-700 to-blue-900 text-white relative overflow-hidden">
+      {/* Éléments de fond décoratifs */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-300/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-40 right-10 w-96 h-96 bg-secondary-300/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl"></div>
+        {/* Cercles et formes géométriques */}
+        <div className="absolute top-20 right-20 w-96 h-96 border border-white/10 rounded-full"></div>
+        <div className="absolute bottom-40 left-20 w-64 h-64 border border-white/10 rounded-full"></div>
+        <div className="absolute top-1/2 left-1/4 w-32 h-32 border border-white/20 rounded-full"></div>
+        
+        {/* Éléments technologiques */}
+        <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-white/20 rounded-full"></div>
+        <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-white/30 rounded-full"></div>
+        <div className="absolute top-2/3 right-1/4 w-6 h-6 bg-white/15 rounded-full"></div>
+        
+        {/* Lignes de connexion */}
+        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
       </div>
 
-      {/* Hero Section */}
-      <section className="relative section-padding text-center">
-        <div className="container-custom">
-          <div className="fade-in">
-            <div className="inline-flex items-center bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-medium text-gray-700 mb-8 border border-gray-200/50 shadow-lg">
-              <Sparkles className="w-4 h-4 mr-2 text-primary-600" />
-              L'événement IA le plus attendu de 2025
-            </div>
 
-            <h1 className="text-7xl md:text-8xl lg:text-9xl font-black mb-8 leading-none">
-              <span className="gradient-text">AIKarangue</span>
-              <span className="block text-4xl md:text-5xl lg:text-6xl font-light text-gray-600 mt-4">
-                L'Avenir de l'Intelligence Artificielle
-              </span>
+      
+
+      {/* Contenu principal */}
+      <main className="relative z-10 px-4 sm:px-6 pt-4 sm:pt-8">
+        <div className="max-w-7xl mx-auto text-center">
+          
+          {/* Titre principal */}
+          <div className="mb-8 sm:mb-16">
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <div className="relative w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32">
+                <Image
+                  src="/logo AI-Karangué.png"
+                  alt="AI-Karangué Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </div>
+            <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 leading-tight px-2">
+              <span className="block text-white mb-2 sm:mb-4">AI-KARANGUÉ</span>
+              <span className="block text-lg sm:text-2xl md:text-4xl text-white/80 font-light">La Révolution de la Sécurité Routière Sénégalaise</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Rejoignez les plus grands experts mondiaux pour explorer les dernières innovations en IA, 
-              découvrir les technologies de demain et façonner l'avenir numérique.
-            </p>
-
-            <div className="mb-16">
-              <div className="inline-block glass-card p-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Événement dans</h3>
-                <Countdown targetDate={new Date('2025-09-20T09:00:00Z')} />
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Link href="/reserve" className="btn-primary text-xl px-10 py-5 flex items-center space-x-3">
-                <span>Réserver ma place</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link href="/program" className="btn-secondary text-xl px-10 py-5 flex items-center space-x-3">
-                <Calendar className="w-5 h-5" />
-                <span>Voir le programme</span>
-              </Link>
-            </div>
-
-            <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-sm text-gray-600">
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span>Rufisque, Sénégal</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
-                <span>20 Septembre 2025</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4" />
-                <span>1700+ Participants</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4" />
-                <span>Gratuit</span>
-              </div>
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-semibold mb-4 sm:mb-6 px-2">
+              Sen Karangué, Sunu Yitté
+              </h2>
+            
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="section-padding bg-white/50 backdrop-blur-sm border-y border-gray-200/50">
-        <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { number: '50+', label: 'Experts nationaux et internationaux', icon: Users },
-              { number: '04+', label: 'Sessions & Ateliers', icon: BookOpen },
-              { number: '1700+', label: 'Participants Attendus', icon: Trophy },
-              { number: '5h', label: 'De Contenu Premium', icon: Brain }
-            ].map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center slide-up">
-                  <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-white" />
+          {/* Compte à rebours */}
+          <div className="mb-8 sm:mb-16">
+            <h3 className="text-lg sm:text-2xl font-bold text-white mb-8 sm:mb-12 px-2">Le Lancement qui Changera l'Histoire</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-sm sm:max-w-3xl mx-auto px-2">
+              {/* Jours */}
+              <div className="text-center">
+                <div className="countdown-box rounded-xl p-3 sm:p-6">
+                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.days ? 'countdown-flip' : ''}`}>
+                    {formatTime(timeLeft.days).slice(-3)}
                   </div>
-                  <div className="text-4xl font-bold gradient-text mb-2">{stat.number}</div>
-                  <div className="text-gray-600 font-medium">{stat.label}</div>
+                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">JOUR(S)</div>
                 </div>
-              );
-            })}
+              </div>
+              
+              {/* Heures */}
+              <div className="text-center">
+                <div className="countdown-box rounded-xl p-3 sm:p-6">
+                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.hours ? 'countdown-flip' : ''}`}>
+                  {formatTime(timeLeft.hours)}
+                  </div>
+                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">HEURE(S)</div>
+                </div>
+              </div>
+              
+              {/* Minutes */}
+              <div className="text-center">
+                <div className="countdown-box rounded-xl p-3 sm:p-6">
+                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.minutes ? 'countdown-flip' : ''}`}>
+                  {formatTime(timeLeft.minutes)}
+                  </div>
+                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">MINUTE(S)</div>
+                </div>
+              </div>
+              
+              {/* Secondes */}
+              <div className="text-center">
+                <div className="countdown-box rounded-xl p-3 sm:p-6">
+                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.seconds ? 'countdown-flip' : ''}`}>
+                  {formatTime(timeLeft.seconds)}
+                  </div>
+                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">SECONDE(S)</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              Pourquoi <span className="gradient-text">AIKarangue</span> ?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Une expérience unique pour découvrir, apprendre et innover dans l'écosystème de l'IA et du transport routier 
-            </p>
+          {/* Informations événement */}
+          <div className="mb-8 sm:mb-16 px-2">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
+              <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                <span className="text-white font-semibold text-sm sm:text-base">20 septembre 2025</span>
+              </div>
+              
+              <div className="hidden sm:block w-px h-6 bg-white/40"></div>
+              
+              <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                <span className="text-white font-semibold text-sm sm:text-base">CICAD - RUFISQUE</span>
+              </div>
+              
+              <div className="hidden sm:block w-px h-6 bg-white/40"></div>
+              
+              <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                <span className="text-white font-semibold text-sm sm:text-base">10h00 - 14h00</span>
+              </div>
+            </div>
+
+            {/* Affichage des places restantes */}
+            {placesRestantes && (
+              <div className="flex justify-center mb-6">
+                <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 backdrop-blur-sm border border-red-300/30 rounded-2xl px-6 py-4">
+                  <div className="flex items-center space-x-3">
+                    <svg className="w-6 h-6 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <div className="text-white font-bold text-lg sm:text-xl">
+                        {placesRestantes.available} places restantes
+                      </div>
+                      <div className="text-red-200 text-sm">
+                        sur {placesRestantes.total} places disponibles
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
+         {/* Boutons en haut */}
+      <div className="relative z-10 px-4 sm:px-6 py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
+          <Link href="/reserve" className="w-full sm:w-auto">
+            <button className="group relative w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-emerald-500/30 hover:scale-105 transform overflow-hidden">
+              <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <span className="relative flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="hidden sm:inline">RÉSERVEZ VOTRE PLACE</span>
+                <span className="sm:hidden">RÉSERVER</span>
+              </span>
+            </button>
+          </Link>
           
-          <div className="grid lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Zap,
-                title: 'Karangué221',
-                description: (
-                  <div>
-                    <div>Une solution ultime pour la numérisation des flottes.</div>
-                    <div>Software : Plateforme de gestion de flotte, AI, SaaS</div>
-                    <div>Hardware : Devices AIoT</div>
-                  </div>
-                ),
-                color: 'bg-primary-500'
-              },
-              {
-                icon: Users,
-                title: 'Sama Karangue',
-                
-                description: 'une solution ultime pour les chauffeurs.',
-                color: 'bg-secondary-800'
-              },  
-              {
-                icon: BookOpen,
-                title: 'Karangue Bag',
-                description: 'Une solution ultime pour augmenter les chances de survie .',
-                color: 'bg-primary-600'
-              }
-            ].map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div key={index} className="card-hover group">
-                  <div className={`w-20 h-20 ${feature.color} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-10 h-10 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4 text-center">{feature.title}</h3>
-                  <div className="text-gray-600 text-center leading-relaxed">{feature.description}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Speakers Preview */}
-      <section className="section-padding bg-white/30 backdrop-blur-sm">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Nos <span className="gradient-text">Partenaires</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-                Les plus grands noms de l'IA mondiale et du transport routier seront présents du ministere du senegal
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {[
-              { name: 'Dem Dikk', avatar: '' },
-              { name: 'MITTA', avatar: '' },  
-              { name: 'MFPRSP', avatar: '' },
-              { name: 'UNCHK', avatar: '' },
-              { name: 'TELTONIKA ', avatar: '' },
-              { name: 'GOVATHON', avatar: '' },
-              { name: 'BOLD GAINDE GROUP', avatar: '' },  
-              { name: 'BP', avatar: '' }
-            ].map((speaker, index) => (
-              <div key={index} className="card-hover text-center">
-                <div className="text-6xl mb-4">{speaker.avatar || '🏢'}</div>
-                <h3 className="text-xl font-bold mb-2">{speaker.name}</h3>
-                <p className="text-gray-600">Partenaire officiel</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Link href="/program" className="btn-secondary">
-              Voir tous les intervenants
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding bg-secondary-800 text-white relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-          <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-        </div>
-        
-        <div className="container-custom relative">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-medium mb-8">
-              <Rocket className="w-4 h-4 mr-2" />
-              Places limitées - Inscription gratuite
-            </div>
-            
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              Prêt à Façonner l'Avenir ?
-            </h2>
-            <p className="text-xl mb-12 opacity-90 leading-relaxed">
-            Nous avons choisi de faire notre part pour répondre à ce problème en développant plusieurs solutions technologiques qui rendent le transport plus sûr et plus fiable.
-              Une opportunité unique de découvrir les technologies qui transformeront notre monde et le transport routier.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/reserve" className="bg-white text-blue-600 px-10 py-5 rounded-2xl font-bold text-xl hover:bg-gray-100 transform hover:scale-105 transition-all duration-200 shadow-2xl flex items-center justify-center space-x-3">
-                <span>Réserver Maintenant</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link href="/program" className="border-2 border-white text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-3">
-                <Calendar className="w-5 h-5" />
-                <span>Programme Détaillé</span>
-              </Link>
+          <button className="group relative w-full sm:w-auto bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:border-white/50 text-white font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-2xl transition-all duration-300 hover:bg-white/20 hover:scale-105 transform overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span className="relative flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="hidden sm:inline">TÉLÉCHARGER LE PROGRAMME</span>
+              <span className="sm:hidden">TÉLÉCHARGER</span>
+            </span>
+          </button>
             </div>
           </div>
         </div>
-      </section>
+      </main>
     </div>
   );
-}
+};

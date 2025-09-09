@@ -1,93 +1,191 @@
-# 🚀 Configuration Supabase pour AIKarangue
+# Configuration Supabase pour AI-Karangué Ticket
 
-## Étapes Rapides
+## 📋 Informations du Projet
+
+- **Nom du projet**: aikarangue-ticket
+- **URL**: https://spjsuglnqjtdfwdkzvkn.supabase.co
+- **API Key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwanN1Z2xucWp0ZGZ3ZGt6dmtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMzA2NDYsImV4cCI6MjA3MjkwNjY0Nn0._gKb6yt1557Yj0Mv6rt0P5ttxR2NpNYFf4bx3tzKV0A`
+- **PostgreSQL URL**: `postgresql://postgres:aikarangueticket@db.spjsuglnqjtdfwdkzvkn.supabase.co:5432/postgres`
+- **Database Password**: `aikarangueticket`
+
+## 🚀 Étapes de Configuration
 
 ### 1. Configuration des Variables d'Environnement
 
-Créer un fichier `.env.local` à la racine du projet :
+Le fichier `.env.local` a été créé avec les bonnes variables :
 
-```bash
-# Configuration Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://spjsuglnqjtdfwdzvkn.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwanN1Z2xucWp0ZGZ3ZHp2a24iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDk3ODc5MSwiZXhwIjoyMDUwNTU0NzkxfQ.wLUOLAUPNsI_BI2_fCZz_QMVV3s2rVx4Yzz_V4BnhGw
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://spjsuglnqjtdfwdkzvkn.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwanN1Z2xucWp0ZGZ3ZGt6dmtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMzA2NDYsImV4cCI6MjA3MjkwNjY0Nn0._gKb6yt1557Yj0Mv6rt0P5ttxR2NpNYFf4bx3tzKV0A
 
-# Secret JWT
-JWT_SECRET=aikarangue-super-secret-key-2026
+# Connexion PostgreSQL directe
+DATABASE_URL=postgresql://postgres:aikarangueticket@db.spjsuglnqjtdfwdkzvkn.supabase.co:5432/postgres
+DB_PASSWORD=aikarangueticket
 
-# URL de l'application
-NEXTAUTH_URL=http://localhost:3000
 NODE_ENV=development
 ```
 
-### 2. Initialisation de la Base de Données
+### 2. Création des Tables dans Supabase
 
-1. **Aller sur Supabase Dashboard** : https://supabase.com/dashboard
-2. **Ouvrir l'éditeur SQL** dans votre projet
-3. **Copier-coller le contenu** du fichier `supabase-schema.sql`
-4. **Exécuter le script** pour créer les tables
+1. Connectez-vous à votre dashboard Supabase : https://app.supabase.com
+2. Ouvrez votre projet `aikarangue-ticket`
+3. Allez dans l'onglet "SQL Editor"
+4. Copiez et exécutez le contenu du fichier `scripts/setup-supabase.sql`
 
-### 3. Vérification
+Ce script créera :
+- ✅ Table `reservations` (réservations des participants)
+- ✅ Table `event_capacity` (gestion des places disponibles)
+- ✅ Vue `reservation_stats` (statistiques)
+- ✅ Triggers automatiques pour la synchronisation
+- ✅ Index pour les performances
+- ✅ Politiques RLS pour la sécurité
 
-Les tables suivantes doivent être créées :
-- ✅ `users` - Utilisateurs avec rôles
-- ✅ `reservations` - Réservations avec QR codes
-- ✅ Utilisateurs de démonstration insérés
-- ✅ Policies RLS configurées
+### 3. Migration des Données Existantes (Optionnel)
 
-### 4. Test des Comptes Démo
+Si vous avez déjà des données dans les fichiers JSON locaux :
 
-Une fois les tables créées, vous pouvez vous connecter avec :
+```bash
+node scripts/migrate-to-supabase.js
+```
 
-- **Admin** : admin@aikarangue.com / admin123
-- **Staff** : staff@aikarangue.com / staff123  
-- **User** : user@aikarangue.com / user123
+### 4. Passage en Mode Production
 
-## 🔧 Fonctionnalités Supabase Utilisées
+Pour utiliser Supabase au lieu des fichiers JSON locaux :
 
-### ✅ **Authentification**
-- Comptes démo avec JWT
-- Gestion des rôles (Admin/Staff/Attendee)
-- Sessions sécurisées
+1. Modifiez `.env.local` :
+```env
+NODE_ENV=production
+```
 
-### ✅ **Base de Données**
-- PostgreSQL hébergé
-- Relations entre tables
-- Index pour performance
+2. Redémarrez le serveur :
+```bash
+npm run dev
+```
 
-### ✅ **Sécurité**
-- Row Level Security (RLS)
-- Policies par rôle
-- Validation des données
+## 🗄️ Connexion PostgreSQL Directe
 
-### ✅ **API**
-- Client TypeScript
-- Requêtes optimisées
-- Gestion d'erreurs
+Vous pouvez vous connecter directement à la base de données PostgreSQL :
 
-## 🚀 Avantages de Supabase
+### URL de Connexion
+```
+postgresql://postgres:aikarangueticket@db.spjsuglnqjtdfwdkzvkn.supabase.co:5432/postgres
+```
 
-- **🌐 Cloud natif** - Pas de configuration locale
-- **⚡ Performance** - PostgreSQL optimisé
-- **🔒 Sécurité** - RLS et authentification intégrée
-- **📈 Scalabilité** - Auto-scaling automatique
-- **🔧 Dashboard** - Interface d'administration
-- **💾 Backups** - Sauvegardes automatiques
+### Avec psql (ligne de commande)
+```bash
+psql "postgresql://postgres:aikarangueticket@db.spjsuglnqjtdfwdkzvkn.supabase.co:5432/postgres"
+```
 
-## 📊 Monitoring
+### Avec des clients GUI
+- **pgAdmin** : Utilisez les paramètres ci-dessus
+- **DBeaver** : Créez une nouvelle connexion PostgreSQL
+- **DataGrip** : Configurez une source de données PostgreSQL
 
-Dans le dashboard Supabase, vous pouvez :
-- Voir les tables et données en temps réel
-- Monitorer les performances
-- Gérer les utilisateurs
-- Consulter les logs
-- Configurer les alertes
+### Paramètres de Connexion
+- **Host** : `db.spjsuglnqjtdfwdkzvkn.supabase.co`
+- **Port** : `5432`
+- **Database** : `postgres`
+- **Username** : `postgres`
+- **Password** : `aikarangueticket`
 
-## 🔗 Liens Utiles
+## 📊 Structure des Tables
 
-- **Projet Supabase** : https://spjsuglnqjtdfwdzvkn.supabase.co
-- **Dashboard** : https://supabase.com/dashboard
-- **Documentation** : https://supabase.com/docs
+### Table `reservations`
+```sql
+- id (UUID, Primary Key)
+- name (VARCHAR, Nom du participant)
+- email (VARCHAR, Email)
+- phone (VARCHAR, Téléphone)
+- company (VARCHAR, Structure/Entreprise)
+- fonction (VARCHAR, Fonction)
+- qrcode (VARCHAR, Code QR unique)
+- checked_in (BOOLEAN, Statut check-in)
+- checked_in_at (TIMESTAMP, Date/heure check-in)
+- created_at (TIMESTAMP, Date création)
+```
 
----
+### Table `event_capacity`
+```sql
+- id (UUID, Primary Key)
+- event_name (VARCHAR, Nom événement)
+- total_places (INTEGER, Places totales)
+- reserved_places (INTEGER, Places réservées)
+- available_places (INTEGER, Places disponibles)
+- last_updated (TIMESTAMP, Dernière mise à jour)
+```
 
-✨ **L'application est maintenant prête avec une base de données cloud professionnelle !**
+## 🔧 Fonctionnalités Automatiques
+
+- **Synchronisation automatique** des places disponibles
+- **Triggers** pour mettre à jour les compteurs
+- **Vue statistiques** pour les dashboards
+- **Index optimisés** pour les performances
+- **Sécurité RLS** configurée
+
+## 🧪 Test de la Configuration
+
+1. Créez une réservation sur http://localhost:3000/reserve
+2. Vérifiez dans Supabase que les données apparaissent
+3. Testez la vérification sur http://localhost:3000/verify
+4. Vérifiez que les places diminuent automatiquement
+
+## 📱 URLs Importantes
+
+- **Dashboard Supabase** : https://app.supabase.com
+- **Projet** : https://app.supabase.com/project/spjsuglnqjtdfwdkzvkn
+- **Table Editor** : https://app.supabase.com/project/spjsuglnqjtdfwdkzvkn/editor
+- **SQL Editor** : https://app.supabase.com/project/spjsuglnqjtdfwdkzvkn/sql
+
+## 🔐 Sécurité
+
+- Les clés API sont configurées pour l'accès public (nécessaire pour les formulaires)
+- RLS est activé avec des politiques permissives
+- En production, vous devriez restreindre les politiques selon vos besoins
+
+## 🛠️ Scripts Utiles
+
+### Tester la connexion PostgreSQL
+```bash
+node scripts/test-postgres-connection.js
+```
+
+### Migrer les données JSON vers Supabase
+```bash
+node scripts/migrate-to-supabase.js
+```
+
+### Se connecter en ligne de commande
+```bash
+psql "postgresql://postgres:aikarangueticket@db.spjsuglnqjtdfwdkzvkn.supabase.co:5432/postgres"
+```
+
+### Requêtes SQL utiles
+
+**Voir toutes les réservations :**
+```sql
+SELECT name, email, company, qrcode, checked_in, created_at 
+FROM reservations 
+ORDER BY created_at DESC;
+```
+
+**Statistiques rapides :**
+```sql
+SELECT 
+  COUNT(*) as total,
+  COUNT(*) FILTER (WHERE checked_in = true) as checked_in,
+  COUNT(*) FILTER (WHERE checked_in = false) as pending
+FROM reservations;
+```
+
+**Places disponibles :**
+```sql
+SELECT * FROM event_capacity WHERE event_name = 'AI-Karangué 2025';
+```
+
+## 🆘 Dépannage
+
+- Si les tables n'existent pas, exécutez `scripts/setup-supabase.sql`
+- Si les données ne s'affichent pas, vérifiez `NODE_ENV` dans `.env.local`
+- Si les API ne fonctionnent pas, vérifiez les variables d'environnement
+- Testez la connexion avec `node scripts/test-postgres-connection.js`
+- Consultez les logs Supabase dans le dashboard pour les erreurs
