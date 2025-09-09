@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       phone,
       company,
       fonction: fonction || 'Non spécifié',
-      qrcode: qrCode,
+      qrcode: uniqueId,  // Utiliser l'ID unique comme QR code
       checked_in: false,
       created_at: new Date().toISOString(),
       checked_in_at: null
@@ -119,8 +119,22 @@ export async function POST(request: NextRequest) {
     placesData.available = placesData.total - placesData.reserved;
     await fs.writeFile(placesPath, JSON.stringify(placesData, null, 2));
 
-    // Générer un QR code simple avec seulement l'ID unique
-    const qrDataURL = await QRCode.toDataURL(uniqueId, {
+    // Générer un QR code avec données JSON complètes
+    const qrData = {
+      id: uniqueId,
+      ticketId: ticketId,
+      name: name,
+      email: email,
+      phone: phone,
+      company: company,
+      fonction: fonction || 'Non spécifié',
+      event: 'AI-Karangué 2025',
+      date: '2025-09-20',
+      venue: 'CICAD - DIAMNIADIO',
+      timestamp: new Date().toISOString()
+    };
+    
+    const qrDataURL = await QRCode.toDataURL(JSON.stringify(qrData), {
       errorCorrectionLevel: 'M',
       type: 'image/png',
       quality: 0.92,

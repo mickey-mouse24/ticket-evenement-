@@ -225,7 +225,6 @@
             border-radius: 12px;
             font-size: 16px;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            text-transform: uppercase;
             background: rgba(255, 255, 255, 0.8);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
@@ -373,15 +372,6 @@
                     <button class="btn btn-secondary" onclick="testCamera()">
                         <i class="fas fa-wrench"></i> Test Caméra
                     </button>
-                </div>
-                
-                <div class="tips">
-                    <h4><i class="fas fa-lightbulb"></i> Conseils :</h4>
-                    <ul>
-                        <li>Assurez-vous d'avoir un bon éclairage</li>
-                        <li>Tenez le QR code stable devant la caméra</li>
-                        <li>Le scan se fait automatiquement</li>
-                    </ul>
                 </div>
             </div>
             
@@ -544,11 +534,30 @@
         function onQRDetected(qrText) {
             stopScanner();
             
-            // Remplir l'input
+            // Traiter le QR code (peut être JSON ou ID simple)
+            let displayText = qrText;
+            let processedId = qrText;
+            
+            try {
+                // Essayer de parser comme JSON
+                const qrData = JSON.parse(qrText);
+                
+                // Extraire l'ID du JSON
+                const extractedId = qrData.id || qrData.ticketId || qrData.unique_id;
+                if (extractedId && extractedId.startsWith('AIK-')) {
+                    processedId = extractedId;
+                    displayText = `📋 JSON détecté - ID: ${extractedId}`;
+                }
+            } catch (e) {
+                // Pas du JSON, utiliser tel quel
+                displayText = `🎫 ID scanné: ${qrText}`;
+            }
+            
+            // Remplir l'input avec le texte original (l'API gère le JSON)
             document.getElementById('ticketInput').value = qrText;
             
-            // Afficher succès
-            showResult(`📱 QR Code scanné: ${qrText}`, 'success');
+            // Afficher succès avec information appropriée
+            showResult(`📱 ${displayText}`, 'success');
             
             // Auto-vérifier
             setTimeout(verifyTicket, 1000);
@@ -582,7 +591,7 @@
 
         async function verifyTicket() {
             const input = document.getElementById('ticketInput');
-            const ticketId = input.value.trim().toUpperCase();
+            const ticketId = input.value.trim();
             
             if (!ticketId) {
                 showResult('Veuillez entrer un ID de ticket', 'error');
@@ -592,31 +601,42 @@
             showResult('Vérification en cours...', 'warning');
             
             try {
-                let uniqueId = ticketId;
+                let uniqueIdToSend = ticketId;
                 
-                // Conversion si nécessaire
-                if (!uniqueId.startsWith('AIK-') || uniqueId.length !== 10) {
-                    const convertResponse = await fetch('/api/convert-ticket-id', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ticketId: ticketId })
-                    });
+                // Vérifier si c'est du JSON ou un ID simple
+                let isJsonFormat = false;
+                try {
+                    JSON.parse(ticketId);
+                    isJsonFormat = true;
+                    // Si c'est du JSON, envoyer tel quel à l'API (elle saura l'analyser)
+                } catch (e) {
+                    // Pas du JSON, traiter comme un ID simple
+                    uniqueIdToSend = ticketId.toUpperCase();
                     
-                    if (convertResponse.ok) {
-                        const convertResult = await convertResponse.json();
-                        if (convertResult.success) {
-                            uniqueId = convertResult.uniqueId;
-                            input.value = uniqueId;
+                    // Conversion si nécessaire (pour les anciens IDs)
+                    if (!uniqueIdToSend.startsWith('AIK-') || uniqueIdToSend.length !== 10) {
+                        const convertResponse = await fetch('/api/convert-ticket-id', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ticketId: uniqueIdToSend })
+                        });
+                        
+                        if (convertResponse.ok) {
+                            const convertResult = await convertResponse.json();
+                            if (convertResult.success) {
+                                uniqueIdToSend = convertResult.uniqueId;
+                                input.value = uniqueIdToSend; // Mettre à jour l'affichage
+                            }
                         }
                     }
                 }
                 
-                // Vérification
+                // Vérification avec l'API intelligente
                 const response = await fetch('/api/verify-unique-id', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        uniqueId: uniqueId,
+                        uniqueId: uniqueIdToSend, // Peut être JSON ou ID simple
                         action: 'verify'
                     })
                 });
@@ -625,6 +645,10 @@
                 
                 if (result.success && result.status === 'valid') {
                     currentTicket = result.ticket;
+                    // Mettre à jour l'affichage avec l'ID extrait si c'était du JSON
+                    if (isJsonFormat && result.id) {
+                        input.value = result.id;
+                    }
                     showTicketInfo(result);
                     document.getElementById('checkinBtn').disabled = false;
                 } else {

@@ -79,14 +79,53 @@ export async function POST(request: NextRequest) {
       
       const ticketId = Math.random().toString(36).substr(2, 9);
       
-      // Assigner un ID unique au ticket
-      const uniqueId = await assignIdToTicket(ticketId);
+      // Assigner un ID unique au ticket (ou en générer un dynamiquement)
+      let uniqueId = await assignIdToTicket(ticketId);
       if (!uniqueId) {
-        console.log('API: Aucun ID unique disponible');
-        return NextResponse.json({ 
-          success: false, 
-          message: 'Désolé, aucun ID unique disponible. Contactez l\'organisateur.' 
-        }, { status: 500 });
+        // Si aucun ID pré-généré disponible, créer un dynamiquement
+        console.log('API: Aucun ID pré-généré disponible, génération dynamique');
+        uniqueId = `AIK-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        console.log(`API: ID unique généré dynamiquement: ${uniqueId}`);
+        
+        // Enregistrer l'ID dynamique dans unique-ids.json
+        try {
+          const idsPath = path.join(process.cwd(), 'data', 'unique-ids.json');
+          let idsData = { 
+            total_generated: 0, 
+            assigned_count: 0, 
+            available_count: 0, 
+            generated_at: new Date().toISOString(),
+            ids: [] 
+          };
+          
+          try {
+            const existingIds = await fs.readFile(idsPath, 'utf8');
+            idsData = JSON.parse(existingIds);
+          } catch (error) {
+            // Fichier n'existe pas, utiliser les données par défaut
+          }
+          
+          // Ajouter le nouvel ID généré dynamiquement
+          const idObj = {
+            id: uniqueId,
+            index: idsData.ids.length + 1,
+            assigned: true,
+            ticket_id: ticketId,
+            created_at: new Date().toISOString(),
+            assigned_at: new Date().toISOString()
+          };
+          
+          idsData.ids.push(idObj);
+          idsData.total_generated = idsData.ids.length;
+          idsData.assigned_count = idsData.ids.filter(id => id.assigned).length;
+          idsData.available_count = idsData.ids.filter(id => !id.assigned).length;
+          
+          await fs.writeFile(idsPath, JSON.stringify(idsData, null, 2));
+          console.log(`API: ID unique ${uniqueId} enregistré dans unique-ids.json`);
+        } catch (saveError) {
+          console.error('API: Erreur sauvegarde ID unique:', saveError);
+          // Continuer même si la sauvegarde échoue
+        }
       }
       
       const mockReservation = {
@@ -97,22 +136,39 @@ export async function POST(request: NextRequest) {
         phone,
         company,
         fonction: fonction || 'Non spécifié',
-        qrcode: `AIK2025-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        qrcode: uniqueId, // Utiliser directement l'ID unique
         checked_in: false,
         created_at: new Date().toISOString()
       };
 
       console.log('API: Réservation mock créée:', mockReservation);
 
-      // Génération du QR code
+      // Génération du QR code avec données JSON complètes
       try {
-        const qrCodeDataUrl = await QRCode.toDataURL(mockReservation.qrcode, {
-          width: 256,
-          margin: 2,
+        const qrData = {
+          id: uniqueId,
+          ticketId: ticketId,
+          name: name,
+          email: email,
+          phone: phone,
+          company: company,
+          fonction: fonction || 'Non spécifié',
+          event: 'AI-Karangué 2025',
+          date: '2025-09-20',
+          venue: 'CICAD - DIAMNIADIO',
+          timestamp: new Date().toISOString()
+        };
+        
+        const qrCodeDataUrl = await QRCode.toDataURL(JSON.stringify(qrData), {
+          errorCorrectionLevel: 'M',
+          type: 'image/png',
+          quality: 0.92,
+          margin: 1,
           color: {
             dark: '#000000',
             light: '#FFFFFF',
           },
+          width: 256
         });
 
         console.log('API: QR code généré avec succès');
@@ -171,15 +227,32 @@ export async function POST(request: NextRequest) {
 
     console.log('API: Réservation créée avec succès:', reservation);
 
-    // Génération du QR code
+    // Génération du QR code avec données JSON complètes
     try {
-      const qrCodeDataUrl = await QRCode.toDataURL(qrcode, {
-        width: 256,
-        margin: 2,
+      const qrData = {
+        id: qrcode,
+        ticketId: reservation.id,
+        name: name,
+        email: email,
+        phone: phone,
+        company: company,
+        fonction: fonction || 'Non spécifié',
+        event: 'AI-Karangué 2025',
+        date: '2025-09-20',
+        venue: 'CICAD - DIAMNIADIO',
+        timestamp: new Date().toISOString()
+      };
+      
+      const qrCodeDataUrl = await QRCode.toDataURL(JSON.stringify(qrData), {
+        errorCorrectionLevel: 'M',
+        type: 'image/png',
+        quality: 0.92,
+        margin: 1,
         color: {
           dark: '#000000',
           light: '#FFFFFF',
         },
+        width: 256
       });
 
       console.log('API: QR code généré avec succès');

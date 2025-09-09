@@ -179,13 +179,13 @@ export default function ReservePage() {
               </div>
             </div>
             <div className="flex justify-center mb-4">
-              <div className="flex space-x-1">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#008081' }}></div>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#24315c' }}></div>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#008081' }}></div>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#24315c' }}></div>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#008081' }}></div>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#24315c' }}></div>
+              <div className="relative w-16 h-8">
+                <Image
+                  src="/logo AI-Karangué.png"
+                  alt="AI-Karangué Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
             <h1 className="text-xl font-bold text-gray-900 mb-1">AI-KARANGUÉ</h1>

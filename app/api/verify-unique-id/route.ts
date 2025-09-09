@@ -51,7 +51,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { uniqueId, action } = body;
+    let { uniqueId, action } = body;
 
     if (!uniqueId || !action) {
       return NextResponse.json({ 
@@ -60,8 +60,40 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Traitement des données QR : peut être un JSON ou un simple ID
+    let extractedId = uniqueId;
+    let qrData = null;
+    
+    try {
+      // Essayer de parser comme JSON (nouveau format)
+      qrData = JSON.parse(uniqueId);
+      extractedId = qrData.id || qrData.ticketId || qrData.unique_id;
+      
+      if (!extractedId) {
+        // Chercher dans les propriétés communes
+        const possibleIds = Object.values(qrData).filter(val => 
+          typeof val === 'string' && val.startsWith('AIK-') && val.length === 10
+        );
+        if (possibleIds.length > 0) {
+          extractedId = possibleIds[0];
+        }
+      }
+    } catch (e) {
+      // Ce n'est pas du JSON, traiter comme un ID simple
+      extractedId = uniqueId.trim().toUpperCase();
+    }
+    
+    if (!extractedId || !extractedId.startsWith('AIK-')) {
+      return NextResponse.json({
+        success: false,
+        status: 'invalid',
+        message: `Format d'ID invalide. ID extrait: "${extractedId}"`,
+        timestamp: new Date().toISOString()
+      });
+    }
+
     // Vérifier si l'ID existe dans notre système
-    const idInfo = await isValidId(uniqueId);
+    const idInfo = await isValidId(extractedId);
     
     if (!idInfo) {
       return NextResponse.json({
@@ -89,14 +121,14 @@ export async function POST(request: NextRequest) {
     const ticketsData = await fs.readFile(ticketsPath, 'utf8');
     const data = JSON.parse(ticketsData);
     
-    // Chercher le ticket par unique_id
-    const ticketIndex = data.tickets.findIndex((t: any) => t.unique_id === uniqueId);
+    // Chercher le ticket par unique_id extrait
+    const ticketIndex = data.tickets.findIndex((t: any) => t.unique_id === extractedId);
     
     if (ticketIndex === -1) {
       return NextResponse.json({
         success: false,
         status: 'invalid',
-        message: `Ticket associé à l'ID "${uniqueId}" non trouvé`,
+        message: `Ticket associé à l'ID "${extractedId}" non trouvé`,
         timestamp: new Date().toISOString()
       });
     }
@@ -109,8 +141,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: false,
           status: 'used',
-          message: `ID "${uniqueId}" déjà utilisé le ${new Date(ticket.checked_in_at).toLocaleString('fr-FR')}`,
-          id: uniqueId,
+          message: `ID "${extractedId}" déjà utilisé le ${new Date(ticket.checked_in_at).toLocaleString('fr-FR')}`,
+          id: extractedId,
+          originalInput: uniqueId,
+          qrData: qrData,
           ticket,
           timestamp: new Date().toISOString()
         });
@@ -120,8 +154,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         status: 'valid',
-        message: `ID "${uniqueId}" valide - Participant: ${ticket.name}`,
-        id: uniqueId,
+        message: `ID "${extractedId}" valide - Participant: ${ticket.name}`,
+        id: extractedId,
+        originalInput: uniqueId,
+        qrData: qrData,
         ticket,
         timestamp: new Date().toISOString()
       });
@@ -132,8 +168,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: false,
           status: 'used',
-          message: `ID "${uniqueId}" déjà utilisé le ${new Date(ticket.checked_in_at).toLocaleString('fr-FR')}`,
-          id: uniqueId,
+          message: `ID "${extractedId}" déjà utilisé le ${new Date(ticket.checked_in_at).toLocaleString('fr-FR')}`,
+          id: extractedId,
+          originalInput: uniqueId,
+          qrData: qrData,
           ticket,
           timestamp: new Date().toISOString()
         });
@@ -149,8 +187,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         status: 'valid',
-        message: `Check-in réussi pour l'ID "${uniqueId}"`,
-        id: uniqueId,
+        message: `Check-in réussi pour l'ID "${extractedId}" - Participant: ${ticket.name}`,
+        id: extractedId,
+        originalInput: uniqueId,
+        qrData: qrData,
         ticket: data.tickets[ticketIndex],
         timestamp: new Date().toISOString()
       });

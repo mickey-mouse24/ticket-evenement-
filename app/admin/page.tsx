@@ -395,6 +395,182 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
+        {/* Liste détaillée des participants */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Liste des Participants</h2>
+            <div className="flex items-center space-x-4">
+              {/* Filtres */}
+              <select 
+                value={filter} 
+                onChange={(e) => setFilter(e.target.value as 'all' | 'checked_in' | 'pending')}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Tous ({tickets.length})</option>
+                <option value="checked_in">Enregistrés ({tickets.filter(t => t.checked_in).length})</option>
+                <option value="pending">En attente ({tickets.filter(t => !t.checked_in).length})</option>
+              </select>
+              
+              {/* Bouton d'actualisation */}
+              <button 
+                onClick={() => loadData()} 
+                disabled={loading || refreshing}
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+              >
+                <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          {/* Tableau des participants */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Statut
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Participant
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Entreprise
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fonction
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID Unique
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Inscription
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Check-in
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredTickets.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                      {filter === 'all' ? 'Aucun participant inscrit' : `Aucun participant ${filter === 'checked_in' ? 'enregistré' : 'en attente'}`}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTickets.map((ticket) => (
+                    <tr key={ticket.id} className="hover:bg-gray-50 transition-colors">
+                      {/* Statut */}
+                      <td className="px-3 py-4">
+                        <div className="flex items-center">
+                          {ticket.checked_in ? (
+                            <div className="w-3 h-3 bg-green-500 rounded-full" title="Enregistré"></div>
+                          ) : (
+                            <div className="w-3 h-3 bg-yellow-500 rounded-full" title="En attente"></div>
+                          )}
+                        </div>
+                      </td>
+                      
+                      {/* Participant */}
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{ticket.name}</div>
+                          <div className="text-sm text-gray-500">ID: {ticket.id}</div>
+                        </div>
+                      </td>
+                      
+                      {/* Contact */}
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="text-sm text-gray-900">{ticket.email}</div>
+                          <div className="text-sm text-gray-500">{ticket.phone}</div>
+                        </div>
+                      </td>
+                      
+                      {/* Entreprise */}
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{ticket.company}</div>
+                      </td>
+                      
+                      {/* Fonction */}
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{ticket.fonction}</div>
+                      </td>
+                      
+                      {/* ID Unique */}
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded text-center">
+                          {ticket.unique_id}
+                        </div>
+                      </td>
+                      
+                      {/* Inscription */}
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">
+                          {new Date(ticket.created_at).toLocaleString('fr-FR', {
+                            day: '2-digit',
+                            month: '2-digit', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </td>
+                      
+                      {/* Check-in */}
+                      <td className="px-6 py-4">
+                        <div>
+                          {ticket.checked_in ? (
+                            <div>
+                              <div className="text-sm text-green-600 font-medium">Enregistré</div>
+                              {ticket.checked_in_at && (
+                                <div className="text-xs text-gray-500">
+                                  {new Date(ticket.checked_in_at).toLocaleString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-sm text-yellow-600">En attente</span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Résumé en bas du tableau */}
+          <div className="mt-4 flex justify-between items-center text-sm text-gray-600 border-t pt-4">
+            <div>
+              Affichage de {filteredTickets.length} participant{filteredTickets.length !== 1 ? 's' : ''}
+              {filter !== 'all' && ` (${filter === 'checked_in' ? 'enregistrés' : 'en attente'})`}
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span>Enregistré</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span>En attente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Informations système */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Informations Système</h2>

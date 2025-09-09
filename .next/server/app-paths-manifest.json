@@ -1,9 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js",
-  "/reserve/page": "app/reserve/page.js",
-  "/admin/page": "app/admin/page.js",
   "/api/admin/stats/route": "app/api/admin/stats/route.js",
+  "/page": "app/page.js",
   "/api/admin/tickets/route": "app/api/admin/tickets/route.js",
-  "/api/reservations/route": "app/api/reservations/route.js"
+  "/api/reservations/route": "app/api/reservations/route.js",
+  "/api/verify-unique-id/route": "app/api/verify-unique-id/route.js",
+  "/admin/page": "app/admin/page.js"
 }

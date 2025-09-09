@@ -1,0 +1,10 @@
+{
+  "backup_date": "2025-09-09T21:56:20.236Z",
+  "reason": "Database reset - returning to 500 available places",
+  "previous_state": {
+    "tickets": 0,
+    "ids": 0,
+    "places_reserved": 0
+  },
+  "note": "This backup was created during database reset"
+}
