@@ -46,3 +46,4 @@ Basé sur le modèle Gov'athon avec la charte graphique AIKarangue :
 ---
 
 Développé avec ❤️ pour l'innovation en Afrique
+# ticket-evenement-
