@@ -1,16 +1,16 @@
 {
   "total_generated": 600,
-  "assigned_count": 0,
-  "available_count": 600,
+  "assigned_count": 1,
+  "available_count": 599,
   "generated_at": "2025-09-09T19:44:18.158Z",
   "ids": [
     {
       "id": "AIK-B7LQGB",
       "index": 1,
-      "assigned": false,
-      "ticket_id": null,
+      "assigned": true,
+      "ticket_id": "cr8tnlkw8",
       "created_at": "2025-09-09T19:44:18.157Z",
-      "assigned_at": null
+      "assigned_at": "2025-09-09T20:33:29.816Z"
     },
     {
       "id": "AIK-OURMG5",

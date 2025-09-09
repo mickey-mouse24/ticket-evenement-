@@ -14,92 +14,180 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
             min-height: 100vh;
             padding: 20px;
-            color: #333;
+            color: #1a1a1a;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Background avec pattern et dégradé - comme page d'accueil */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('/pattern.jpeg');
+            background-size: cover;
+            opacity: 0.1;
+            z-index: -2;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom right, rgba(13, 148, 136, 0.08), rgba(59, 130, 246, 0.06), rgba(99, 102, 241, 0.08));
+            z-index: -1;
+        }
+        
+        /* Éléments décoratifs subtils */
+        .decorative-element {
+            position: absolute;
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .decorative-element.one {
+            top: 20%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            opacity: 0.5;
+        }
+        
+        .decorative-element.two {
+            bottom: 15%;
+            left: 5%;
+            width: 200px;
+            height: 200px;
+            border: 1px solid rgba(229, 231, 235, 0.3);
+            opacity: 0.3;
         }
         
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(229, 231, 235, 0.5);
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 30px;
+            padding: 28px 24px;
             text-align: center;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+            position: relative;
         }
         
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #0ea5e9, #0284c7, #0369a1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
         }
         
         .main-content {
-            padding: 30px;
+            padding: 24px;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .section:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
         }
         
         .scanner-section {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
             text-align: center;
         }
         
-        .input-section {
-            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
+        .section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .input-section h2 {
+            color: #0ea5e9;
+            justify-content: flex-start;
+        }
+        
+        .scanner-section h2 {
+            color: #0ea5e9;
         }
         
         .btn {
-            padding: 15px 25px;
+            padding: 12px 18px;
             border: none;
             border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px;
+            transition: all 0.2s ease;
+            margin: 8px 6px;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            background: linear-gradient(to right, #0ea5e9, #0284c7);
             color: white;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+            box-shadow: 0 4px 10px rgba(14, 165, 233, 0.15);
         }
         
         .btn-secondary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(to right, #3b82f6, #2563eb);
             color: white;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
         }
         
         .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: linear-gradient(to right, #ef4444, #dc2626);
             color: white;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15);
         }
         
         .btn:hover:not(:disabled) {
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
         }
         
         .btn:disabled {
@@ -111,10 +199,11 @@
             width: 100%;
             max-width: 400px;
             height: 300px;
-            border-radius: 15px;
+            border-radius: 12px;
             background: #000;
             margin: 20px auto;
             display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .input-group {
@@ -124,75 +213,136 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #166534;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
         }
         
         .input-group input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e7ff;
+            padding: 14px 16px;
+            border: 1px solid rgba(209, 213, 219, 0.8);
             border-radius: 12px;
-            font-size: 1.1em;
-            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.8);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
         
         .result {
             margin-top: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 6px solid;
+            padding: 16px 20px;
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .result.success {
-            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-            border-color: #10b981;
+            background: rgba(209, 250, 229, 0.6);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             color: #065f46;
         }
         
         .result.error {
-            background: linear-gradient(135deg, #fee2e2, #fca5a5);
-            border-color: #ef4444;
+            background: rgba(254, 226, 226, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.3);
             color: #991b1b;
         }
         
         .result.warning {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            border-color: #f59e0b;
+            background: rgba(254, 243, 199, 0.6);
+            border: 1px solid rgba(245, 158, 11, 0.3);
             color: #92400e;
         }
         
         .status {
             text-align: center;
-            padding: 20px;
+            padding: 16px;
             font-weight: 500;
-            color: #1e3c72;
+            color: #4b5563;
+            font-size: 14px;
         }
         
         .tips {
             background: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid rgba(229, 231, 235, 0.8);
         }
         
         .tips h4 {
             margin-bottom: 10px;
-            color: #166534;
+            color: #0ea5e9;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .tips ul {
-            padding-left: 20px;
-            color: #374151;
+            padding-left: 24px;
+            color: #4b5563;
+            font-size: 14px;
         }
         
         .tips li {
-            margin: 5px 0;
+            margin: 6px 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+            
+            .container {
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 20px 16px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .main-content {
+                padding: 16px;
+            }
+            
+            .section {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            
+            .btn {
+                padding: 10px 14px;
+                font-size: 13px;
+                margin: 6px 4px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Éléments décoratifs subtils -->
+    <div class="decorative-element one"></div>
+    <div class="decorative-element two"></div>
+    
     <div class="container">
         <div class="header">
             <h1>
@@ -203,7 +353,7 @@
         
         <div class="main-content">
             <!-- Section Scanner Caméra -->
-            <div class="scanner-section">
+            <div class="section scanner-section">
                 <h2><i class="fas fa-camera"></i> Scanner avec Caméra</h2>
                 
                 <div class="status" id="camera-status">
@@ -236,7 +386,7 @@
             </div>
             
             <!-- Section Saisie Manuelle -->
-            <div class="input-section">
+            <div class="section input-section">
                 <h2><i class="fas fa-keyboard"></i> Saisie Manuelle</h2>
                 
                 <div class="input-group">
