@@ -34,7 +34,7 @@ async function generateTestQR() {
     company: 'AI-Karangué Test Co',
     event: 'AI-Karangué 2025',
     date: '2025-09-20',
-    venue: 'CICAD - RUFISQUE'
+    venue: 'CICAD - DIAMNIADIO'
   };
   
   try {

@@ -87,186 +87,186 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-600 via-blue-700 to-blue-900 text-white relative overflow-hidden">
-      {/* Éléments de fond décoratifs */}
+    <div className="h-screen bg-white relative overflow-hidden">
+      {/* Background avec pattern et dégradé */}
       <div className="absolute inset-0">
-        {/* Cercles et formes géométriques */}
-        <div className="absolute top-20 right-20 w-96 h-96 border border-white/10 rounded-full"></div>
-        <div className="absolute bottom-40 left-20 w-64 h-64 border border-white/10 rounded-full"></div>
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 border border-white/20 rounded-full"></div>
+        <div className="absolute inset-0">
+          <Image
+            src="/pattern.jpeg"
+            alt="Pattern"
+            fill
+            className="object-cover opacity-10"
+            quality={100}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-50/80 via-blue-50/60 to-indigo-50/80"></div>
+        </div>
         
-        {/* Éléments technologiques */}
-        <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-white/20 rounded-full"></div>
-        <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-white/30 rounded-full"></div>
-        <div className="absolute top-2/3 right-1/4 w-6 h-6 bg-white/15 rounded-full"></div>
+        {/* Éléments décoratifs subtils - cachés sur mobile */}
+        <div className="hidden md:block absolute top-20 right-20 w-96 h-96 border border-gray-100 rounded-full opacity-50"></div>
+        <div className="hidden md:block absolute bottom-40 left-20 w-64 h-64 border border-gray-100 rounded-full opacity-30"></div>
+        <div className="hidden md:block absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-r from-teal-100/20 to-blue-100/20 rounded-full opacity-60"></div>
         
-        {/* Lignes de connexion */}
-        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
-              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+        {/* Éléments décoratifs mobiles plus petits */}
+        <div className="md:hidden absolute top-16 right-8 w-24 h-24 border border-gray-100 rounded-full opacity-30"></div>
+        <div className="md:hidden absolute bottom-20 left-6 w-16 h-16 bg-gradient-to-r from-teal-100/20 to-blue-100/20 rounded-full opacity-40"></div>
       </div>
 
-
-      
-
-      {/* Contenu principal */}
-      <main className="relative z-10 px-4 sm:px-6 pt-4 sm:pt-8">
-        <div className="max-w-7xl mx-auto text-center">
+      {/* Navigation avec logo - optimisée mobile */}
+      <nav className="relative z-20 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+            <Image
+              src="/logo AI-Karangué.png"
+              alt="AI-Karangué Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
           
-          {/* Titre principal */}
-          <div className="mb-8 sm:mb-16">
-            <div className="flex justify-center mb-6 sm:mb-8">
-              <div className="relative w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32">
-                <Image
-                  src="/logo AI-Karangué.png"
-                  alt="AI-Karangué Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
+          {/* Status badge places - responsive */}
+          {placesRestantes && (
+            <div className="flex items-center space-x-2 bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 shadow-sm">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-gray-700 text-xs sm:text-sm font-medium">
+                <span className="hidden sm:inline">{placesRestantes.available} places disponibles</span>
+                <span className="sm:hidden">{placesRestantes.available} places</span>
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 leading-tight px-2">
-              <span className="block text-white mb-2 sm:mb-4">AI-KARANGUÉ</span>
-              <span className="block text-lg sm:text-2xl md:text-4xl text-white/80 font-light">La Révolution de la Sécurité Routière Sénégalaise</span>
-            </h1>
-            
-            <div className="mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-semibold mb-4 sm:mb-6 px-2">
-              Sen Karangué, Sunu Yitté
-              </h2>
-            
+          )}
+        </div>
+      </nav>
+
+      {/* Contenu principal - Layout optimisé mobile */}
+      <main className="relative z-10 px-4 sm:px-6 flex flex-col h-full">
+        <div className="flex-1 flex flex-col justify-center max-w-6xl mx-auto w-full py-4">
+          
+          {/* Section héro compacte mobile */}
+          <div className="text-center mb-6 lg:mb-8">
+            <div className="space-y-3 sm:space-y-4 mb-6 lg:mb-8">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight px-2">
+                <span className="bg-gradient-to-r from-teal-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  AI-KARANGUÉ
+                </span>
+              </h1>
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-600 font-light max-w-3xl mx-auto px-2">
+                La Révolution de la Sécurité Routière Sénégalaise
+              </p>
+              <p className="text-sm sm:text-base lg:text-lg text-gray-700 font-medium px-2">
+                Sen Karangué, Sunu Yitté
+              </p>
             </div>
           </div>
 
-          {/* Compte à rebours */}
-          <div className="mb-8 sm:mb-16">
-            <h3 className="text-lg sm:text-2xl font-bold text-white mb-8 sm:mb-12 px-2">Le Lancement qui Changera l'Histoire</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-sm sm:max-w-3xl mx-auto px-2">
-              {/* Jours */}
-              <div className="text-center">
-                <div className="countdown-box rounded-xl p-3 sm:p-6">
-                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.days ? 'countdown-flip' : ''}`}>
-                    {formatTime(timeLeft.days).slice(-3)}
+          {/* Layout mobile-first */}
+          <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
+            
+            {/* Section compteur - mobile first */}
+            <div className="space-y-4 lg:space-y-6 order-1">
+              <div className="text-center lg:text-left">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-2 px-2">
+                  Le Lancement qui Changera l'Histoire
+                </h2>
+                <p className="text-xs sm:text-sm lg:text-base text-gray-600 px-2">
+                  <span className="block sm:hidden">20 sept 2025</span>
+                  <span className="hidden sm:block lg:hidden">20 septembre 2025 • CICAD</span>
+                  <span className="hidden lg:block">20 septembre 2025 • CICAD - DIAMNIADIO • 09h30-12h30</span>
+                </p>
+              </div>
+              
+              {/* Compteur mobile responsive */}
+              <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-sm sm:max-w-lg mx-auto lg:mx-0">
+                {[
+                  { value: formatTime(timeLeft.days).slice(-3), label: 'JOURS', shortLabel: 'J' },
+                  { value: formatTime(timeLeft.hours), label: 'HEURES', shortLabel: 'H' },
+                  { value: formatTime(timeLeft.minutes), label: 'MIN', shortLabel: 'M' },
+                  { value: formatTime(timeLeft.seconds), label: 'SEC', shortLabel: 'S' }
+                ].map((item, index) => (
+                  <div key={index} className="text-center">
+                    <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-sm">
+                      <div className={`text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent mb-1 ${
+                        flipAnimation[Object.keys(flipAnimation)[index]] ? 'animate-pulse' : ''
+                      }`}>
+                        {item.value}
+                      </div>
+                      <div className="text-gray-500 font-medium text-xs uppercase tracking-wider">
+                        <span className="sm:hidden">{item.shortLabel}</span>
+                        <span className="hidden sm:inline">{item.label}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">JOUR(S)</div>
-                </div>
-              </div>
-              
-              {/* Heures */}
-              <div className="text-center">
-                <div className="countdown-box rounded-xl p-3 sm:p-6">
-                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.hours ? 'countdown-flip' : ''}`}>
-                  {formatTime(timeLeft.hours)}
-                  </div>
-                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">HEURE(S)</div>
-                </div>
-              </div>
-              
-              {/* Minutes */}
-              <div className="text-center">
-                <div className="countdown-box rounded-xl p-3 sm:p-6">
-                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.minutes ? 'countdown-flip' : ''}`}>
-                  {formatTime(timeLeft.minutes)}
-                  </div>
-                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">MINUTE(S)</div>
-                </div>
-              </div>
-              
-              {/* Secondes */}
-              <div className="text-center">
-                <div className="countdown-box rounded-xl p-3 sm:p-6">
-                  <div className={`text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 countdown-number ${flipAnimation.seconds ? 'countdown-flip' : ''}`}>
-                  {formatTime(timeLeft.seconds)}
-                  </div>
-                  <div className="text-white/80 font-medium uppercase tracking-wide text-xs sm:text-sm">SECONDE(S)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Informations événement */}
-          <div className="mb-8 sm:mb-16 px-2">
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
-              <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                <span className="text-white font-semibold text-sm sm:text-base">20 septembre 2025</span>
-              </div>
-              
-              <div className="hidden sm:block w-px h-6 bg-white/40"></div>
-              
-              <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                <span className="text-white font-semibold text-sm sm:text-base">CICAD - RUFISQUE</span>
-              </div>
-              
-              <div className="hidden sm:block w-px h-6 bg-white/40"></div>
-              
-              <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                <span className="text-white font-semibold text-sm sm:text-base">10h00 - 14h00</span>
+                ))}
               </div>
             </div>
 
-            {/* Affichage des places restantes */}
-            {placesRestantes && (
-              <div className="flex justify-center mb-6">
-                <div className="bg-gradient-to-r from-red-500/20 to-orange-500/20 backdrop-blur-sm border border-red-300/30 rounded-2xl px-6 py-4">
+            {/* Section informations et actions - mobile */}
+            <div className="space-y-4 lg:space-y-6 order-2">
+              {/* Card informations mobile */}
+              <div className="bg-white/60 backdrop-blur-sm border border-gray-200/50 rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 shadow-sm">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center space-x-3">
-                    <svg className="w-6 h-6 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <div className="text-white font-bold text-lg sm:text-xl">
-                        {placesRestantes.available} places restantes
-                      </div>
-                      <div className="text-red-200 text-sm">
-                        sur {placesRestantes.total} places disponibles
-                      </div>
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-500 text-xs sm:text-sm font-medium">Date</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">20 septembre 2025</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-500 text-xs sm:text-sm font-medium">Lieu</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">CICAD - DIAMNIADIO</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-500 text-xs sm:text-sm font-medium">Horaires</p>
+                      <p className="text-gray-900 font-semibold text-sm sm:text-base">09h30 - 12h30</p>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
 
-         {/* Boutons en haut */}
-      <div className="relative z-10 px-4 sm:px-6 py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
-          <Link href="/reserve" className="w-full sm:w-auto">
-            <button className="group relative w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-emerald-500/30 hover:scale-105 transform overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="hidden sm:inline">RÉSERVEZ VOTRE PLACE</span>
-                <span className="sm:hidden">RÉSERVER</span>
-              </span>
-            </button>
-          </Link>
-          
-          <button className="group relative w-full sm:w-auto bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:border-white/50 text-white font-bold py-3 sm:py-4 px-4 sm:px-8 rounded-2xl transition-all duration-300 hover:bg-white/20 hover:scale-105 transform overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <span className="relative flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="hidden sm:inline">TÉLÉCHARGER LE PROGRAMME</span>
-              <span className="sm:hidden">TÉLÉCHARGER</span>
-            </span>
-          </button>
+              {/* Boutons d'action mobile */}
+              <div className="flex flex-col gap-3 sm:gap-4">
+                <Link href="/reserve" className="w-full">
+                  <button className="group relative w-full bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-teal-500/25 active:scale-95 sm:hover:scale-105 transform">
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-sm sm:text-base">Réserver ma place</span>
+                    </span>
+                  </button>
+                </Link>
+                
+                <button className="group relative w-full bg-white/80 backdrop-blur-sm border-2 border-gray-300/50 hover:border-gray-400/50 text-gray-700 font-semibold py-3 sm:py-3.5 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 hover:bg-white/90 active:scale-95 sm:hover:scale-105 transform shadow-sm hover:shadow-lg">
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-sm sm:text-base">
+                      <span className="sm:hidden">Programme</span>
+                      <span className="hidden sm:inline">Télécharger le programme</span>
+                    </span>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -18,7 +18,7 @@ export async function GET() {
     console.error('Erreur lecture places:', error);
     return NextResponse.json({
       success: true,
-      places: { total: 1000, reserved: 520, available: 480 }
+      places: { total: 500, reserved: 0, available: 500 }
     });
   }
 }

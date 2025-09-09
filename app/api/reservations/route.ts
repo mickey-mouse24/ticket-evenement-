@@ -17,7 +17,7 @@ async function getAvailablePlaces() {
     return JSON.parse(data);
   } catch (error) {
     console.error('Erreur lors de la lecture des places:', error);
-    return { total: 1000, reserved: 0, available: 1000 };
+    return { total: 500, reserved: 0, available: 500 };
   }
 }
 

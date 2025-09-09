@@ -1,7 +1,8 @@
 {
   "/page": "app/page.js",
   "/reserve/page": "app/reserve/page.js",
-  "/api/convert-ticket-id/route": "app/api/convert-ticket-id/route.js",
-  "/api/verify-unique-id/route": "app/api/verify-unique-id/route.js",
-  "/api/create-reservation/route": "app/api/create-reservation/route.js"
+  "/api/reservations/route": "app/api/reservations/route.js",
+  "/admin/page": "app/admin/page.js",
+  "/api/admin/stats/route": "app/api/admin/stats/route.js",
+  "/api/admin/tickets/route": "app/api/admin/tickets/route.js"
 }

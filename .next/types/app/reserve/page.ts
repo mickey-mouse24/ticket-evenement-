@@ -1,4 +1,4 @@
-// File: /Users/macbookretina/Library/Mobile Documents/com~apple~CloudDocs/aikarangue_Ticket/app/reserve/page.tsx
+// File: /Users/abdoulayexyz/Documents/PROJECTS/DEV/ticket-evenement-/app/reserve/page.tsx
 import * as entry from '../../../../app/reserve/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

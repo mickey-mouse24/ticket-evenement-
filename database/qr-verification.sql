@@ -58,7 +58,7 @@ CREATE INDEX IF NOT EXISTS idx_verification_attempts_time ON verification_attemp
 
 -- Insérer l'événement AI-Karangué par défaut
 INSERT INTO events (name, date, location, max_capacity) 
-VALUES ('AI-Karangué 2025', '2025-09-20 09:00:00', 'CICAD - RUFISQUE', 500)
+VALUES ('AI-Karangué 2025', '2025-09-20 09:00:00', 'CICAD - DIAMNIADIO', 500)
 ON CONFLICT DO NOTHING;
 
 -- Vue pour les statistiques
