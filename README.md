@@ -39,7 +39,7 @@ Basé sur le modèle Gov'athon avec la charte graphique AIKarangue :
 
 ## 📍 Événement
 
-**Date :** 15 Mars 2025  
+**Date :** 20 septembre 2025  
 **Lieu :** CICAD, Route De Diamniadio, Dakar, Sénégal  
 **Type :** Innovation Summit Et Cérémonie De Remise De Lauréats
 
